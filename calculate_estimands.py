@@ -54,7 +54,7 @@ if cat_index:
 
 if num_index:
     data_num_pop_df = data_df.iloc[:, num_index]
-    if save_name != "house2":
+    if save_name == "house2":
         data_bin_pop_ls, bins = zip(*data_num_pop_df.apply(pd.qcut, 0, q=8, labels = False, retbins=True, duplicates="drop"))
         data_bin_pop_df = pd.concat(data_bin_pop_ls, axis=1)
     else:
@@ -99,9 +99,9 @@ for model_name in model_names:
 
 for i in range(num_samples):
     # load samples
-    data_i = np.loadtxt('../samples/complete/sample_{}.csv'.format(i),
+    data_i = np.loadtxt('./samples/complete/sample_{}.csv'.format(i),
                         delimiter=",").astype(np.float32)
-    data_miss_i = np.loadtxt('../samples/{}/sample_{}.csv'.format( miss_mechanism, i),
+    data_miss_i = np.loadtxt('./samples/{}/sample_{}.csv'.format( miss_mechanism, i),
                              delimiter=",").astype(np.float32)
     data_m = 1 - np.isnan(data_miss_i).astype(np.float32)
     # seperate categorical variables and numerical variables
@@ -130,9 +130,9 @@ for i in range(num_samples):
         for l in range(num_imputations):
             # loading imputations
             if model_name == "gain" or model_name == "mida":
-                data_imputed = np.loadtxt('../results/{}/{}/{}/imputed_{}_{}.csv'.format(save_name, miss_mechanism, model_name, i, l),delimiter=",").astype (np.float32)
+                data_imputed = np.loadtxt('./results/{}/{}/{}/imputed_{}_{}.csv'.format(save_name, miss_mechanism, model_name, i, l),delimiter=",").astype (np.float32)
             if model_name == "cart" or model_name =="rf":
-                data_imputed = pd.read_csv('../results/{}/{}/{}/imputed_{}_{}.csv'.format(save_name, miss_mechanism, model_name, i, l)).values.astype(np.float32)
+                data_imputed = pd.read_csv('./results/{}/{}/{}/imputed_{}_{}.csv'.format(save_name, miss_mechanism, model_name, i, l)).values.astype(np.float32)
             # report accuracy
             mse[model_name].append(rmse_loss(data_i, data_imputed, data_m))
             # seperate categorical variables an d numerical variables

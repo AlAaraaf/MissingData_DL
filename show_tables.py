@@ -9,12 +9,12 @@ import pandas as pd
 from utils.utils import table_to_latex
 
 # Load data
-save_name = "house2"
+save_name = "house"
 miss_mechanism = "MCAR"
 file_name = 'data/house_recoded.csv'
 data_df = pd.read_csv(file_name)
 data_x = data_df.values.astype(np.float32)
-save_path = "./metrics/{}/{}".format(save_name, miss_mechanism)
+save_path = "../metrics/{}/{}".format(save_name, miss_mechanism)
 
 # load cat
 mar_relmse = pd.DataFrame(np.load(os.path.join(save_path, "mar_rel_mse.npy"), allow_pickle=True).item())

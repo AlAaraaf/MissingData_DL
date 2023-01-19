@@ -5,7 +5,7 @@ from __future__ import print_function
 import numpy as np
 import pandas as pd
 
-from utils import sample_batch_index, binary_sampler
+from utils.utils import sample_batch_index, binary_sampler
 from tqdm import trange
 
 if __name__ == '__main__':

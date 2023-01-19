@@ -6,13 +6,14 @@ import numpy as np
 import pandas as pd
 import pathlib
 import os
+import tensorflow as tf
 
 from models.MIDA_v2 import autoencoder_imputation
 from models.GAIN_v2 import gain
 from utils.utils import rmse_loss
 
 if __name__ == '__main__':
-    num_samples = 100
+    num_samples = 10
     num_imputations = 10
 
     DAE_parameters = {'learning_rate': 0.001,
@@ -28,14 +29,14 @@ if __name__ == '__main__':
                        }
 
     # Load data
-    file_name = '../data/house_recoded.csv'
+    file_name = './data/house_recoded.csv'
     model_name = "gain"
     save_name = "house"
-    miss_mechanism = "MAR"
+    miss_mechanism = "MCAR"
     data_df = pd.read_csv(file_name)
     data_x = data_df.values.astype(np.float32)
 
-    save_path = "../results/{}/{}".format(save_name, miss_mechanism)
+    save_path = "./results/{}/{}".format(save_name, miss_mechanism)
     pathlib.Path(save_path).mkdir(parents=True, exist_ok=True)
 
     num_index = list(range(-8, 0))
@@ -47,8 +48,8 @@ if __name__ == '__main__':
 
     rmse_ls = []
     for i in range(num_samples):
-        file_name = '../samples/{}/{}/sample_{}.csv'.format(save_name, miss_mechanism, i)
-        data_x_i = np.loadtxt('../samples/{}/complete/sample_{}.csv'.format(save_name, i), delimiter=",").astype(np.float32)
+        file_name = './samples/{}/sample_{}.csv'.format(miss_mechanism, i)
+        data_x_i = np.loadtxt('./samples/complete/sample_{}.csv'.format(i), delimiter=",").astype(np.float32)
 
         miss_data_x = np.loadtxt(file_name, delimiter=",").astype(np.float32)
         data_m = 1 - np.isnan(miss_data_x).astype(np.float32)
