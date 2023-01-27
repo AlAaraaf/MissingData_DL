@@ -22,7 +22,7 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    num_imputations = 1
+    num_imputations = 10
 
     DAE_parameters = {'learning_rate': 0.001,
                         'batch_size': 512,
@@ -57,6 +57,13 @@ if __name__ == '__main__':
     elif dataset == 'boston':
         num_index = list(range(-12, 0))
         cat_index = list(range(-data_df.shape[1], -12))
+        # get all possible levels for categorical variable
+        all_levels = [np.unique(x) for x in data_x[:, cat_index].T]
+        all_levels_dict = dict(zip(data_df.columns[cat_index], all_levels))
+
+    elif dataset == 'credit':
+        num_index = list(range(-14, 0))
+        cat_index = list(range(-data_df.shape[1], -14))
         # get all possible levels for categorical variable
         all_levels = [np.unique(x) for x in data_x[:, cat_index].T]
         all_levels_dict = dict(zip(data_df.columns[cat_index], all_levels))
