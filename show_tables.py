@@ -78,14 +78,14 @@ save_loc = args.output + "_relative_metrics50.tex"
 # generate latex for cat
 table_to_latex(mar_relmse_table, biv_relmse_table, "relative mean squared error", "categorical", float_format = "%.2f", save_mode=save_mode, save_loc=save_loc)
 save_mode = "a"
-table_to_latex(mar_nbias_table, biv_nbias_table, "normalized bias", "categorical", float_format = "%.2f", save_mode=save_mode, save_loc=save_loc, percentage=True)
-table_to_latex(mar_nvar_table, biv_nvar_table, "normalized variance", "categorical", float_format = "%.2f", save_mode=save_mode, save_loc=save_loc)
-table_to_latex(mar_relbias_table, biv_relbias_table, "relative bias", "categorical", float_format = "%.2f", save_mode=save_mode, save_loc=save_loc)
-table_to_latex(mar_relvar_table, biv_relvar_table, "relative variance", "categorical", float_format = "%.2f", save_mode=save_mode, save_loc=save_loc)
+# table_to_latex(mar_nbias_table, biv_nbias_table, "normalized bias", "categorical", float_format = "%.2f", save_mode=save_mode, save_loc=save_loc, percentage=True)
+# table_to_latex(mar_nvar_table, biv_nvar_table, "normalized variance", "categorical", float_format = "%.2f", save_mode=save_mode, save_loc=save_loc)
+# table_to_latex(mar_relbias_table, biv_relbias_table, "relative bias", "categorical", float_format = "%.2f", save_mode=save_mode, save_loc=save_loc)
+# table_to_latex(mar_relvar_table, biv_relvar_table, "relative variance", "categorical", float_format = "%.2f", save_mode=save_mode, save_loc=save_loc)
 # generate latex for cont
 table_to_latex(mar_bin_relmse_table, biv_bin_relmse_table, "relative mean squared error", "binned continuous", float_format = "%.2f", save_mode=save_mode, save_loc=save_loc)
 save_mode = "a"
-table_to_latex(mar_bin_nbias_table, biv_bin_nbias_table, "normalized bias", "binned continuous", float_format = "%.2f", save_mode=save_mode, save_loc=save_loc, percentage=True)
-table_to_latex(mar_bin_nvar_table, biv_bin_nvar_table, "normalized variance", "binned continuous", float_format = "%.2f", save_mode=save_mode, save_loc=save_loc)
-table_to_latex(mar_bin_relbias_table, biv_bin_relbias_table, "relative bias", "binned continuous", float_format = "%.2f", save_mode=save_mode, save_loc=save_loc)
-table_to_latex(mar_bin_relvar_table, biv_bin_relvar_table, "relative variance", "binned continuous", float_format = "%.2f", save_mode=save_mode, save_loc=save_loc)
+# table_to_latex(mar_bin_nbias_table, biv_bin_nbias_table, "normalized bias", "binned continuous", float_format = "%.2f", save_mode=save_mode, save_loc=save_loc, percentage=True)
+# table_to_latex(mar_bin_nvar_table, biv_bin_nvar_table, "normalized variance", "binned continuous", float_format = "%.2f", save_mode=save_mode, save_loc=save_loc)
+# table_to_latex(mar_bin_relbias_table, biv_bin_relbias_table, "relative bias", "binned continuous", float_format = "%.2f", save_mode=save_mode, save_loc=save_loc)
+# table_to_latex(mar_bin_relvar_table, biv_bin_relvar_table, "relative variance", "binned continuous", float_format = "%.2f", save_mode=save_mode, save_loc=save_loc)
