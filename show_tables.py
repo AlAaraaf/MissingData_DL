@@ -5,13 +5,21 @@ from __future__ import print_function
 import os
 import numpy as np
 import pandas as pd
+import argparse
 
 from utils.utils import table_to_latex
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-dataset", type = str, required=True)
+    parser.add_argument("-output", type = str, required=True)
+    return parser.parse_args()
+
+args = parse_args()
 # Load data
-save_name = "house"
+save_name = args.dataset
 miss_mechanism = "MCAR"
-file_name = 'data/house_recoded.csv'
+file_name = 'data/' + save_name + '.csv'
 data_df = pd.read_csv(file_name)
 data_x = data_df.values.astype(np.float32)
 save_path = "../metrics/{}/{}".format(save_name, miss_mechanism)
@@ -65,7 +73,7 @@ biv_bin_relvar = pd.DataFrame(np.load(os.path.join(save_path, "biv_bin_relvar.np
 biv_bin_relvar_table = biv_bin_relvar.quantile([0.1, 0.25, 0.5, 0.75, 0.9])
 
 save_mode = "w"
-save_loc = "relative_metrics.tex"
+save_loc = args.output + "_relative_metrics50.tex"
 
 # generate latex for cat
 table_to_latex(mar_relmse_table, biv_relmse_table, "relative mean squared error", "categorical", float_format = "%.2f", save_mode=save_mode, save_loc=save_loc)

@@ -6,24 +6,40 @@ import os
 import numpy as np
 import pandas as pd
 import pathlib
+import argparse
 
 from utils.utils import rmse_loss, get_bins_from_numerical
 from evaluation.performance_metric import marginal_estimands, bivariate_estimands, house_bins
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-dataset", type = str, required=True)
+    parser.add_argument("-completedir", type = str, required=True)
+    parser.add_argument("-missingdir", type = str, required = True)
+    parser.add_argument("-imputedir", type = str, required=True)
+    return parser.parse_args()
+
+# read pre_directions
+args = parse_args()
+dataset = args.dataset
+complete_data_folder = args.completedir
+missing_data_folder = args.missingdir
+imputed_data_folder = args.imputedir
+
 # Load data
 model_names = ["cart", "rf", "gain", "mida"]
-model_names = ["gain"]
-num_samples = 10
+model_names = ["vaeac"]
+num_samples = 2
 num_imputations = 10
 
-save_name = "house"
+save_name = dataset
 miss_mechanism = "MCAR"
-file_name = './data/house_recoded.csv'
+file_name = './data/' + save_name + '.csv'
 data_df = pd.read_csv(file_name)
 data_x = data_df.values.astype(np.float32)
 
-num_index = list(range(-8, 0))
-cat_index = list(range(-data_df.shape[1], -8))
+num_index = list(range(-12, 0))
+cat_index = list(range(-data_df.shape[1], -12))
 
 # Parameters
 no, dim = data_x.shape
@@ -99,9 +115,9 @@ for model_name in model_names:
 
 for i in range(num_samples):
     # load samples
-    data_i = np.loadtxt('./samples/complete/sample_{}.csv'.format(i),
+    data_i = np.loadtxt(complete_data_folder + '/sample_{}.csv'.format(i),
                         delimiter=",").astype(np.float32)
-    data_miss_i = np.loadtxt('./samples/{}/sample_{}.csv'.format( miss_mechanism, i),
+    data_miss_i = np.loadtxt(missing_data_folder + '/sample_{}.csv'.format(i),
                              delimiter=",").astype(np.float32)
     data_m = 1 - np.isnan(data_miss_i).astype(np.float32)
     # seperate categorical variables and numerical variables
@@ -129,8 +145,8 @@ for i in range(num_samples):
         print("{}th sample, model: {}".format(i, model_name))
         for l in range(num_imputations):
             # loading imputations
-            if model_name == "gain" or model_name == "mida":
-                data_imputed = np.loadtxt('./results/{}/{}/{}/imputed_{}_{}.csv'.format(save_name, miss_mechanism, model_name, i, l),delimiter=",").astype (np.float32)
+            if model_name == "gain" or model_name == "mida" or model_name == "vaeac":
+                data_imputed = np.loadtxt(imputed_data_folder + '/imputed_{}_{}.csv'.format(i, l),delimiter=",").astype (np.float32)
             if model_name == "cart" or model_name =="rf":
                 data_imputed = pd.read_csv('./results/{}/{}/{}/imputed_{}_{}.csv'.format(save_name, miss_mechanism, model_name, i, l)).values.astype(np.float32)
             # report accuracy

@@ -2,15 +2,23 @@ import os
 import numpy as np
 import pandas as pd
 import pathlib
+import argparse
 from evaluation.performance_metric import complete_CI, imputed_CI, coverage_rate, rel_mse_bias_var, interval_length_ratio, variance_ratio, rel_mse
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-dataset", type = str, required=True)
+    return parser.parse_args()
+
+args = parse_args()
 
 # Load data
 model_names = ["cart", "rf", "gain", "mida"]
-model_names = ["gain"]
+model_names = ["vaeac"]
 miss_mechanism = "MCAR"
 
-save_name = "house"
-file_name = './data/house_recoded.csv'
+save_name = args.dataset
+file_name = './data/' + save_name + '.csv'
 data_df = pd.read_csv(file_name)
 data_x = data_df.values.astype(np.float32)
 # Parameters
