@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import argparse
 
-from utils.utils import sample_batch_index, binary_sampler
+from utils.utils import sample_batch_index, binary_sampler, response_sampler
 from tqdm import trange
 
 def parse_args():
@@ -17,6 +17,7 @@ def parse_args():
     parser.add_argument("-mr", type = float, required=True) # missing rate
     parser.add_argument("-size", type = int, required=True) # sample size
     parser.add_argument("-seed", type = int, required=False, default = 42) # set seed
+    parser.add_argument("-missc", type = int, required=False, default=-1) # specify whether only impute on one variable
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -50,9 +51,16 @@ if __name__ == '__main__':
         np.savetxt(save_path, data_x_i, delimiter=",")
 
         # Introduce missing data
-        data_m = binary_sampler(1 - miss_rate, no_i, dim_i, args.seed)
-        miss_data_x = data_x_i.copy()
-        miss_data_x[data_m == 0] = np.nan
+        if args.missc == -1:
+            data_m = binary_sampler(1 - miss_rate, no_i, dim_i, args.seed)
+            miss_data_x = data_x_i.copy()
+            miss_data_x[data_m == 0] = np.nan
+        else:
+            data_m = response_sampler(1 - miss_rate, no_i, dim_i, args.missc, args.seed)
+            miss_data_x = data_x_i.copy()
+            miss_data_x[data_m == 0] = np.nan
+        
+        # Save files
         save_path = "./samples/{}/MCAR_{}_{}/sample_{}.csv".format(dataset,miss_rate, sample_size, i)
         np.savetxt(save_path, miss_data_x, delimiter=",")
 

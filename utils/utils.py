@@ -137,6 +137,12 @@ def binary_sampler(p, rows, cols, seed):
     binary_random_matrix = 1 * (unif_random_matrix < p)
     return binary_random_matrix.astype('float32')
 
+def response_sampler(p, rows, cols, col_index, seed):
+  np.random.seed(seed)
+  unif_random_matrix = np.random.uniform(0., 1., size = [rows, len(col_index)])
+  binary_random_matrix = np.ones((rows, cols))
+  binary_random_matrix[:,col_index] = 1 * (unif_random_matrix[:,len(col_index)] < p)
+  return binary_random_matrix.astype('float32')
 
 def uniform_sampler(low, high, rows, cols):
     '''Sample uniform random variables.
