@@ -14,9 +14,9 @@ registerDoParallel(cluster)
 
 # preparation
 model_name = "cart"
-save_name = "house"
-complete_filefolder = "complete_0.3_10000"
-miss_filefolder = "MCAR_0.3_10000"
+save_name = "sim_1"
+complete_filefolder = "complete_0.3_5000"
+miss_filefolder = "MCAR_0.3_5000"
 save_path = paste("./results/", save_name, "/", miss_filefolder,"/",model_name, sep = '')
 
 #parallel
