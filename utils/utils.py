@@ -121,7 +121,7 @@ def xavier_init(size):
     return tf.random_normal(shape=size, stddev=xavier_stddev)
 
 
-def binary_sampler(p, rows, cols):
+def binary_sampler(p, rows, cols, seed):
     '''Sample binary random variables.
   
   Args:
@@ -132,6 +132,7 @@ def binary_sampler(p, rows, cols):
   Returns:
     - binary_random_matrix: generated binary random matrix.
   '''
+    np.random.seed(seed)
     unif_random_matrix = np.random.uniform(0., 1., size=[rows, cols])
     binary_random_matrix = 1 * (unif_random_matrix < p)
     return binary_random_matrix.astype('float32')
@@ -155,7 +156,7 @@ def uniform_sampler(low, high, rows, cols):
 def uniform_categorical_sampler(n_classes, rows):
     return np.array([np.random.choice(n, rows) for n in n_classes]).T
 
-def sample_batch_index(total, batch_size):
+def sample_batch_index(total, batch_size, seed):
     '''Sample index of the mini-batch.
   
   Args:
@@ -165,6 +166,7 @@ def sample_batch_index(total, batch_size):
   Returns:
     - batch_idx: batch index
   '''
+    np.random.seed(seed)
     total_idx = np.random.permutation(total)
     batch_idx = total_idx[:batch_size]
     return batch_idx
