@@ -5,8 +5,8 @@ library(doParallel)
 library(dplyr)
 
 # register cores
-cores = 50
-print(cores)
+cores = as.integer(Sys.getenv("SLURM_CPUS_PER_TASK")) - 1
+print("Cores number: ",cores)
 cluster = makeCluster(cores)
 clusterSetRNGStream(cluster, 9956)
 registerDoParallel(cluster)
@@ -37,8 +37,8 @@ foreach(i = 0:(sample_size-1), .packages = c("mice"))%dopar%{
   
   print("Change variable types......")
   # change categorical variables into factors
-  cat_index = 1:(dim(data_df)[2]-8)
-  num_index = (dim(data_df)[2]-7) : dim(data_df)[2]
+  cat_index = 1:(dim(data_x_i)[2]-8)
+  num_index = (dim(data_x_i)[2]-7) : dim(data_x_i)[2]
   data_x_i[,cat_index] = lapply(data_x_i[,cat_index], as.factor)
   data_miss_i[,cat_index] = lapply(data_miss_i[,cat_index], as.factor)
   
