@@ -5,7 +5,7 @@ library(doParallel)
 library(dplyr)
 
 # register cores
-cores = 100
+cores = 50
 print(cores)
 cluster = makeCluster(cores)
 clusterSetRNGStream(cluster, 9956)
@@ -55,3 +55,5 @@ foreach(i = 0:(sample_size-1), .packages = c("mice"))%dopar%{
   
   print(paste("Sample",i,"done."))
 }
+
+stopCluster(cluster)
