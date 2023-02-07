@@ -6,7 +6,7 @@ library(dplyr)
 
 # register cores
 cores = as.integer(Sys.getenv("SLURM_CPUS_PER_TASK")) - 1
-print("Cores number: ",cores)
+print(paste("Cores number: ",cores))
 cluster = makeCluster(cores)
 clusterSetRNGStream(cluster, 9956)
 registerDoParallel(cluster)
