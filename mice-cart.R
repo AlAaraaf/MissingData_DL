@@ -5,7 +5,7 @@ library(doParallel)
 library(dplyr)
 
 # register cores
-cores = detectCores() - 1
+cores = 100
 print(cores)
 cluster = makeCluster(cores)
 clusterSetRNGStream(cluster, 9956)
