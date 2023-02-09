@@ -14,9 +14,9 @@ registerDoParallel(cluster)
 
 # preparation
 model_name = "cart"
-save_name = "sim_1"
-complete_filefolder = "complete_0.3_5000"
-miss_filefolder = "MCAR_0.3_5000"
+save_name = "house"
+complete_filefolder = "complete_0.3_10000"
+miss_filefolder = "MCAR_0.3_10000"
 save_path = paste("./results/", save_name, "/", miss_filefolder,"/",model_name, sep = '')
 
 #parallel
@@ -47,7 +47,7 @@ foreach(i = 0:(sample_size-1), .packages = c("mice"))%dopar%{
   
   print("Data Imputation......")
   # imputation
-  data_output_i = mice(data_miss_i, m = imputed_num, method = 'cart', minsplit = 5)
+  data_output_i = mice(data_miss_i, m = imputed_num, method = 'cart', minbucket = 5)
   
   # output results
   print("Output imputed data......")
