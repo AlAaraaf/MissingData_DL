@@ -1,4 +1,5 @@
 import os
+import sys
 import numpy as np
 import pandas as pd
 import pathlib
@@ -25,8 +26,13 @@ data_x = data_df.values.astype(np.float32)
 no, dim = data_x.shape
 n = 10000
 
-num_index = list(range(-8, 0))
-cat_index = list(range(-data_df.shape[1], -8))
+# Variable type
+numeric_variable_nums = dict([('boston', 12), ('house',8),('sim_1', 0),('sim_2',0)])
+if args.dataset not in numeric_variable_nums.keys():
+    sys.exit("Wrong Dataset!")
+
+num_index = list(range(-numeric_variable_nums[args.dataset], 0))
+cat_index = list(range(-data_df.shape[1], -numeric_variable_nums[args.dataset]))
 
 save_path = "../metrics/{}/{}".format(save_name, miss_mechanism)
 pathlib.Path(save_path).mkdir(parents=True, exist_ok=True)

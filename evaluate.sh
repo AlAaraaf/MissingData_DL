@@ -1,5 +1,5 @@
 #!/bin/bash
-python ./calculate_estimands.py -dataset boston -num 2 -completedir ../vaeac/samples/boston/complete/ -missingdir ../vaeac/samples/boston/MCAR/ -imputedir ../vaeac/results/boston/
-python ./evaluate_estimands.py -dataset boston
-python ./show_tables.py -dataset boston -output vaeac_boston_mr_size
+python ./calculate_estimands.py -dataset house -num 10 -completedir ./samples/house/complete_0.3_10000/ -missingdir ./samples/house/MCAR_0.3_10000/ -imputedir ./results/house/MCAR_0.3_10000/cart/
+python ./evaluate_estimands.py -dataset hosue
+python ./show_tables.py -dataset house -output cart_house_0.3_10000
 echo 'finish'

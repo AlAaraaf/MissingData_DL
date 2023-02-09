@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import sys
 import numpy as np
 import pandas as pd
 import pathlib
@@ -27,6 +28,10 @@ complete_data_folder = args.completedir
 missing_data_folder = args.missingdir
 imputed_data_folder = args.imputedir
 
+numeric_variable_nums = dict([('boston', 12), ('house',8),('sim_1', 0),('sim_2',0)])
+if dataset not in numeric_variable_nums.keys():
+    sys.exit("Wrong Dataset!")
+
 # Load data
 model_names = ["cart", "rf", "gain", "mida"]
 model_names = ["vaeac"]
@@ -39,8 +44,8 @@ file_name = './data/' + save_name + '.csv'
 data_df = pd.read_csv(file_name)
 data_x = data_df.values.astype(np.float32)
 
-num_index = list(range(-12, 0))
-cat_index = list(range(-data_df.shape[1], -12))
+num_index = list(range(-numeric_variable_nums[dataset], 0))
+cat_index = list(range(-data_df.shape[1], -numeric_variable_nums[dataset]))
 
 # Parameters
 no, dim = data_x.shape
