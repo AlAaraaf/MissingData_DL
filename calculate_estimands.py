@@ -28,7 +28,7 @@ complete_data_folder = args.completedir
 missing_data_folder = args.missingdir
 imputed_data_folder = args.imputedir
 
-numeric_variable_nums = dict([('boston', 12), ('house',8),('sim_1', 0),('sim_2',0)])
+numeric_variable_nums = dict([('boston', 12), ('house',8),('sim_1', 0),('sim_2',0), ('sim_1_tiny',0), ('sim_2_tiny',0)])
 if dataset not in numeric_variable_nums.keys():
     sys.exit("Wrong Dataset!")
 
