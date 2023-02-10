@@ -34,7 +34,7 @@ if dataset not in numeric_variable_nums.keys():
 
 # Load data
 model_names = ["cart", "rf", "gain", "mida"]
-model_names = ["vaeac"]
+model_names = ["cart"]
 num_samples = int(args.num)
 num_imputations = 10
 
@@ -151,15 +151,17 @@ for i in range(num_samples):
         print("{}th sample, model: {}".format(i, model_name))
         for l in range(num_imputations):
             # loading imputations
-            if model_name == "gain" or model_name == "mida" or model_name == "vaeac":
+            if model_name == "gain" or model_name == "cart" or model_name == "vaeac":
                 data_imputed = np.loadtxt(imputed_data_folder + '/imputed_{}_{}.csv'.format(i, l),delimiter=",").astype (np.float32)
-            if model_name == "cart" or model_name =="rf":
+            if model_name =="rf":
                 data_imputed = pd.read_csv('./results/{}/{}/{}/imputed_{}_{}.csv'.format(save_name, miss_mechanism, model_name, i, l)).values.astype(np.float32)
             # report accuracy
             mse[model_name].append(rmse_loss(data_i, data_imputed, data_m))
             # seperate categorical variables an d numerical variables
             if cat_index:
                 imputed_cat = data_imputed[:, cat_index]
+                if model_name == 'cart':
+                    imputed_cat = imputed_cat - 1.0
                 imputed_cat_df = pd.DataFrame(data=imputed_cat,
                                               index=list(range(imputed_cat.shape[0])),
                                               columns=data_df.columns[cat_index])
