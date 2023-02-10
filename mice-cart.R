@@ -7,17 +7,19 @@ library(dplyr)
 # register cores
 cores = min(detectCores()-1, 50)
 print(paste("Cores number: ",cores))
-cluster = makeCluster(cores, outfile = "")
+cluster = makeCluster(cores)
 clusterSetRNGStream(cluster, 9956)
 registerDoParallel(cluster)
 
 
 # preparation
 model_name = "cart"
-save_name = "house"
-complete_filefolder = "complete_0.3_10000"
-miss_filefolder = "MCAR_0.3_10000"
+save_name = "sim_1_tiny"
+complete_filefolder = "complete_0.3_5000"
+miss_filefolder = "MCAR_0.3_5000"
 save_path = paste("./results/", save_name, "/", miss_filefolder,"/",model_name, sep = '')
+dir.create(save_path, recursive = T)
+
 
 #parallel
 sample_size = 10
@@ -35,7 +37,7 @@ foreach(i = 0:(sample_size-1), .packages = c("mice"))%dopar%{
   
   print("Change variable types......")
   # change categorical variables into factors
-  cat_index = 1:(dim(data_miss_i)[2]-8)
+  cat_index = 1:(dim(data_miss_i)[2])
   data_miss_i[,cat_index] = lapply(data_miss_i[,cat_index], as.factor)
   
   # set NAN level back to NA
@@ -47,7 +49,7 @@ foreach(i = 0:(sample_size-1), .packages = c("mice"))%dopar%{
   
   print("Data Imputation......")
   # imputation
-  data_output_i = mice(data_miss_i, m = imputed_num, method = 'cart', minbucket = 5)
+  data_output_i = mice(data_miss_i, m = imputed_num, method = 'cart', minbucket = 5, cp=1e-04)
   
   # output results
   print("Output imputed data......")
