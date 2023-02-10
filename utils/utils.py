@@ -121,7 +121,7 @@ def xavier_init(size):
     return tf.random_normal(shape=size, stddev=xavier_stddev)
 
 
-def binary_sampler(p, rows, cols, seed):
+def binary_sampler(p, rows, cols, seed = 42):
     '''Sample binary random variables.
   
   Args:
@@ -137,7 +137,7 @@ def binary_sampler(p, rows, cols, seed):
     binary_random_matrix = 1 * (unif_random_matrix < p)
     return binary_random_matrix.astype('float32')
 
-def response_sampler(p, rows, cols, col_index, seed):
+def response_sampler(p, rows, cols, col_index, seed = 42):
   np.random.seed(seed)
   unif_random_matrix = np.random.uniform(0., 1., size = [rows, 1])
   binary_random_matrix = np.ones((rows, cols))

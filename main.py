@@ -33,9 +33,9 @@ if __name__ == '__main__':
     gain_parameters = {'batch_size': 512,
                        'hint_rate': 0.13, # MAR
                        'alpha': 100,
-                       'iterations': 100,
+                       'iterations': 150,
                        'dlr':0.01,
-                       'glr':0.005
+                       'glr':0.0007
                        }
 
     # Load data
