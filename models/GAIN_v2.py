@@ -11,6 +11,8 @@ def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num
     hint_rate = gain_parameters['hint_rate']
     alpha = gain_parameters['alpha']
     iterations = gain_parameters['iterations']
+    discriminator_lr = gain_parameters['dlr']
+    generator_lr = gain_parameters['glr']
 
     data_train = np.array([])
     data_train_m = np.array([])
@@ -164,8 +166,8 @@ def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num
         return D_loss, G_loss_temp, reconstructloss
 
     ## GAIN solver
-    D_solver = tf.optimizers.Adam()
-    G_solver = tf.optimizers.Adam()
+    D_solver = tf.optimizers.Adam(discriminator_lr)
+    G_solver = tf.optimizers.Adam(generator_lr)
 
 
     # Start Iterations

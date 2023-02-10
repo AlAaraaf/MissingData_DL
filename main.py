@@ -30,10 +30,12 @@ if __name__ == '__main__':
                         'num_steps_phase2': 2,
                         'theta': 7}
 
-    gain_parameters = {'batch_size': 256,
+    gain_parameters = {'batch_size': 512,
                        'hint_rate': 0.13, # MAR
                        'alpha': 100,
-                       'iterations': 200
+                       'iterations': 100,
+                       'dlr':0.01,
+                       'glr':0.005
                        }
 
     # Load data
@@ -64,6 +66,13 @@ if __name__ == '__main__':
     elif dataset == 'credit':
         num_index = list(range(-14, 0))
         cat_index = list(range(-data_df.shape[1], -14))
+        # get all possible levels for categorical variable
+        all_levels = [np.unique(x) for x in data_x[:, cat_index].T]
+        all_levels_dict = dict(zip(data_df.columns[cat_index], all_levels))
+    
+    elif dataset == 'sim_1_tiny':
+        num_index = list(range(0,0))
+        cat_index = list(range(-data_df.shape[1],0))
         # get all possible levels for categorical variable
         all_levels = [np.unique(x) for x in data_x[:, cat_index].T]
         all_levels_dict = dict(zip(data_df.columns[cat_index], all_levels))
