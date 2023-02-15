@@ -35,7 +35,9 @@ if __name__ == '__main__':
                        'alpha': 100,
                        'iterations': 150,
                        'dlr':0.01,
-                       'glr':0.0007
+                       'glr':0.0007,
+                       'd_gradstep':1,
+                       'g_gradstep':3
                        }
 
     # Load data

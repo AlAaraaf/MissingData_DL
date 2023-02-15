@@ -13,6 +13,8 @@ def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num
     iterations = gain_parameters['iterations']
     discriminator_lr = gain_parameters['dlr']
     generator_lr = gain_parameters['glr']
+    d_grad_step = gain_parameters['d_gradstep']
+    g_grad_step = gain_parameters['g_gradstep']
 
     data_train = np.array([])
     data_train_m = np.array([])
@@ -138,20 +140,21 @@ def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num
 
     # optimizer
     @tf.function
-    def optimize_step(X_mb, M_mb, H_mb, n_classes):
-        with tf.GradientTape() as g:
-            # Generator
-            G_sample = generator(X_mb, M_mb)
-            # Combine with observed data
-            Hat_X = X_mb * M_mb + G_sample * (1 - M_mb)
-            # Discriminator
-            D_prob = discriminator(Hat_X, H_mb)
-            D_loss = gain_Dloss(D_prob, M_mb)
+    def optimize_step(X_mb, M_mb, H_mb, n_classes, d_grad_step = 5, g_grad_step = 3):
+        for i in range(d_grad_step):
+            with tf.GradientTape() as g:
+                # Generator
+                G_sample = generator(X_mb, M_mb)
+                # Combine with observed data
+                Hat_X = X_mb * M_mb + G_sample * (1 - M_mb)
+                # Discriminator
+                D_prob = discriminator(Hat_X, H_mb)
+                D_loss = gain_Dloss(D_prob, M_mb)
 
-        Dgradients = g.gradient(D_loss, theta_D)
-        D_solver.apply_gradients(zip(Dgradients, theta_D))
+            Dgradients = g.gradient(D_loss, theta_D)
+            D_solver.apply_gradients(zip(Dgradients, theta_D))
 
-        for i in range(3):
+        for i in range(g_grad_step):
             with tf.GradientTape() as g:
                 # Generator
                 G_sample = generator(X_mb, M_mb)
@@ -163,6 +166,7 @@ def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num
                 G_loss = G_loss_temp + alpha*reconstructloss
             Ggradients = g.gradient(G_loss, theta_G)
             G_solver.apply_gradients(zip(Ggradients, theta_G))
+
         return D_loss, G_loss_temp, reconstructloss
 
     ## GAIN solver
@@ -192,7 +196,7 @@ def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num
             # Combine random vectors with observed vectors
             X_mb = M_mb * X_mb + (1-M_mb) * Z_mb
 
-            D_loss_curr, G_loss_curr, reconstructloss = optimize_step(X_mb, M_mb, H_mb, n_classes)
+            D_loss_curr, G_loss_curr, reconstructloss = optimize_step(X_mb, M_mb, H_mb, n_classes, d_grad_step, g_grad_step)
             Gloss_list.append(G_loss_curr)
             Dloss_list.append(D_loss_curr)
             pbar.set_description("D_loss: {:.3f}, G_loss: {:.3f}, Reconstruction loss: {:.3f}".format(D_loss_curr.numpy(),
