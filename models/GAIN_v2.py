@@ -2,8 +2,12 @@
 import tensorflow as tf
 import numpy as np
 from tqdm import tqdm
+from torch.utils.tensorboard import SummaryWriter
+from datetime import datetime
 
 from utils.utils import xavier_init, binary_sampler, uniform_sampler, onehot_encoding, onehot_decoding, normalization, renormalization
+
+TIMESTAMP = "{0:%Y-%m-%dT%H-%M-%S/}".format(datetime.now())
 
 def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num_imputations=10):
     # System parameters
@@ -15,6 +19,7 @@ def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num
     generator_lr = gain_parameters['glr']
     d_grad_step = gain_parameters['d_gradstep']
     g_grad_step = gain_parameters['g_gradstep']
+    writer_dir = gain_parameters['log_name']
 
     data_train = np.array([])
     data_train_m = np.array([])
@@ -173,6 +178,8 @@ def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num
     D_solver = tf.optimizers.Adam(discriminator_lr)
     G_solver = tf.optimizers.Adam(generator_lr)
 
+    # Tensorboard Setting
+    writer = SummaryWriter('runs/' + writer_dir + TIMESTAMP)
 
     # Start Iterations
     Gloss_list = []
@@ -195,13 +202,15 @@ def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num
 
             # Combine random vectors with observed vectors
             X_mb = M_mb * X_mb + (1-M_mb) * Z_mb
-
             D_loss_curr, G_loss_curr, reconstructloss = optimize_step(X_mb, M_mb, H_mb, n_classes, d_grad_step, g_grad_step)
             Gloss_list.append(G_loss_curr)
             Dloss_list.append(D_loss_curr)
             pbar.set_description("D_loss: {:.3f}, G_loss: {:.3f}, Reconstruction loss: {:.3f}".format(D_loss_curr.numpy(),
                                                                                                       G_loss_curr.numpy(),
                                                                                                       reconstructloss.numpy()))
+            writer.add_scalar('Dloss', D_loss_curr.numpy(), i)
+            writer.add_scalar('Gloss', G_loss_curr.numpy(), i)
+            writer.add_scalar('Rloss', reconstructloss.numpy(), i)
 
     ## Return imputed data
     imputed_list = []

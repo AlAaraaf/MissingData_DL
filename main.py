@@ -33,11 +33,12 @@ if __name__ == '__main__':
     gain_parameters = {'batch_size': 512,
                        'hint_rate': 0.13, # MAR
                        'alpha': 100,
-                       'iterations': 150,
+                       'iterations': 40,
                        'dlr':0.01,
-                       'glr':0.0007,
+                       'glr':0.007,
                        'd_gradstep':1,
-                       'g_gradstep':3
+                       'g_gradstep':1,
+                       'log_name':'gain_sim_1_tiny/'
                        }
 
     # Load data
