@@ -32,13 +32,13 @@ if __name__ == '__main__':
 
     gain_parameters = {'batch_size': 512,
                        'hint_rate': 0.13, # MAR
-                       'alpha': 100,
-                       'iterations': 40,
+                       'alpha': 10,
+                       'iterations': 50,
                        'dlr':0.01,
-                       'glr':0.007,
-                       'd_gradstep':1,
-                       'g_gradstep':1,
-                       'log_name':'gain_sim_1_tiny/'
+                       'glr':0.05,
+                       'd_gradstep':2,
+                       'g_gradstep':2,
+                       'log_name':'gain_sim_1_tiny/alpha-tune/'
                        }
 
     # Load data
