@@ -67,13 +67,16 @@ def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num
     G_W1 = tf.Variable(xavier_init([input_dim*2, h_Gdim]))
     G_b1 = tf.Variable(tf.zeros(shape = [h_Gdim]))
 
-    G_W2 = tf.Variable(xavier_init([h_Gdim, h_Gdim]))
-    G_b2 = tf.Variable(tf.zeros(shape = [h_Gdim]))
+    G_W2 = tf.Variable(xavier_init([h_Gdim, int(0.5*h_Gdim)]))
+    G_b2 = tf.Variable(tf.zeros(shape = [int(0.5*h_Gdim)]))
 
-    G_W3 = tf.Variable(xavier_init([h_Gdim, input_dim]))
-    G_b3 = tf.Variable(tf.zeros(shape = [input_dim]))
+    G_W3 = tf.Variable(xavier_init([int(0.5*h_Gdim), h_Gdim]))
+    G_b3 = tf.Variable(tf.zeros(shape = [h_Gdim]))
 
-    theta_G = [G_W1, G_W3, G_b1, G_b3]
+    G_W4 = tf.Variable(xavier_init([h_Gdim, input_dim]))
+    G_b4 = tf.Variable(tf.zeros(shape = [input_dim]))
+
+    theta_G = [G_W1, G_W4, G_b1, G_b4]
 
     ## GAIN functions
     # Generator
@@ -83,7 +86,8 @@ def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num
         inputs = tf.concat(values = [x, m], axis = 1)
         G_h1 = tf.nn.leaky_relu(tf.matmul(inputs, G_W1) + G_b1)
         G_h2 = tf.nn.leaky_relu(tf.matmul(G_h1, G_W2) + G_b2)
-        G_logit = tf.matmul(G_h2, G_W3) + G_b3
+        G_h3 = tf.nn.leaky_relu(tf.matmul(G_h2, G_W3) + G_b3)
+        G_logit = tf.matmul(G_h3, G_W4) + G_b4
 
         col_index = 0
         empty_G_out = True
@@ -100,6 +104,7 @@ def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num
             G_out_num = tf.nn.sigmoid(G_logit[:, col_index:])
             G_out = tf.concat(values=[G_out, G_out_num], axis=1) if not empty_G_out else G_out_num
         return G_out
+    
     # Discriminator
     @tf.function
     def discriminator(x, h):
