@@ -4,6 +4,7 @@ import numpy as np
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
+from tensorflow.keras.layers import BatchNormalization
 
 from utils.utils import xavier_init, binary_sampler, uniform_sampler, onehot_encoding, onehot_decoding, normalization, renormalization
 
@@ -66,12 +67,15 @@ def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num
     # Data + Mask as inputs (Random noise is in missing components)
     G_W1 = tf.Variable(xavier_init([input_dim*2, h_Gdim]))
     G_b1 = tf.Variable(tf.zeros(shape = [h_Gdim]))
+    G_h1BN = BatchNormalization()
 
     G_W2 = tf.Variable(xavier_init([h_Gdim, int(0.5*h_Gdim)]))
     G_b2 = tf.Variable(tf.zeros(shape = [int(0.5*h_Gdim)]))
+    G_h2BN = BatchNormalization()
 
     G_W3 = tf.Variable(xavier_init([int(0.5*h_Gdim), h_Gdim]))
     G_b3 = tf.Variable(tf.zeros(shape = [h_Gdim]))
+    G_h3BN = BatchNormalization()
 
     G_W4 = tf.Variable(xavier_init([h_Gdim, input_dim]))
     G_b4 = tf.Variable(tf.zeros(shape = [input_dim]))
@@ -81,12 +85,19 @@ def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num
     ## GAIN functions
     # Generator
     @tf.function
-    def generator(x,m):
+    def generator(x,m, is_training = True):
         # Concatenate Mask and Data
         inputs = tf.concat(values = [x, m], axis = 1)
+        
         G_h1 = tf.nn.leaky_relu(tf.matmul(inputs, G_W1) + G_b1)
+        G_h1 = G_h1BN(G_h1)
+        
         G_h2 = tf.nn.leaky_relu(tf.matmul(G_h1, G_W2) + G_b2)
+        G_h2 = G_h2BN(G_h2)
+        
         G_h3 = tf.nn.leaky_relu(tf.matmul(G_h2, G_W3) + G_b3)
+        G_h3 = G_h3BN(G_h3)
+
         G_logit = tf.matmul(G_h3, G_W4) + G_b4
 
         col_index = 0
@@ -154,7 +165,7 @@ def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num
         for i in range(d_grad_step):
             with tf.GradientTape() as g:
                 # Generator
-                G_sample = generator(X_mb, M_mb)
+                G_sample = generator(X_mb, M_mb, False)
                 # Combine with observed data
                 Hat_X = X_mb * M_mb + G_sample * (1 - M_mb)
                 # Discriminator
@@ -225,7 +236,7 @@ def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num
         X_mb = data_train
         X_mb = M_mb * X_mb + (1-M_mb) * Z_mb
 
-        imputed_data = generator(X_mb, M_mb)
+        imputed_data = generator(X_mb, M_mb, False)
         imputed_data = data_train_m * data_train + (1-data_train_m) * imputed_data
 
         # revert onehot and renormalize
