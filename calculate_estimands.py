@@ -15,6 +15,7 @@ from evaluation.performance_metric import marginal_estimands, bivariate_estimand
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-dataset", type = str, required=True)
+    parser.add_argument("-model", type = str, required=True)
     parser.add_argument("-num", type = int, required=True) #number of samples
     parser.add_argument("-completedir", type = str, required=True)
     parser.add_argument("-missingdir", type = str, required = True)
@@ -34,7 +35,7 @@ if dataset not in numeric_variable_nums.keys():
 
 # Load data
 model_names = ["cart", "rf", "gain", "mida"]
-model_names = ["cart"]
+model_names = [args.model]
 num_samples = int(args.num)
 num_imputations = 10
 
