@@ -9,13 +9,14 @@ from evaluation.performance_metric import complete_CI, imputed_CI, coverage_rate
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-dataset", type = str, required=True)
+    parser.add_argument("-model", type = str, required=True)
     return parser.parse_args()
 
 args = parse_args()
 
 # Load data
 model_names = ["cart", "rf", "gain", "mida"]
-model_names = ["vaeac"]
+model_names = [args.model]
 miss_mechanism = "MCAR"
 
 save_name = args.dataset
