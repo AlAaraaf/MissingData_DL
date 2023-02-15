@@ -36,7 +36,7 @@ num_index = numeric_variable_nums[save_name]
 cat_index = data_df.shape[1]-numeric_variable_nums[save_name]
 
 # load cat
-if cat_index:
+if cat_index > 0:
     mar_relmse = pd.DataFrame(np.load(os.path.join(save_path, "mar_rel_mse.npy"), allow_pickle=True).item())
     mar_relmse_table = mar_relmse.quantile([0.1, 0.25, 0.5, 0.75, 0.9])
     biv_relmse = pd.DataFrame(np.load(os.path.join(save_path, "biv_rel_mse.npy"), allow_pickle=True).item())
