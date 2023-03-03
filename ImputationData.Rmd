@@ -1,0 +1,161 @@
+---
+title: "ImputaionData"
+author: "Jiaxin Shi"
+date: "1/10/2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## load libraries
+```{r}
+library(mice)
+library(foreach)
+library(doParallel)
+library(dplyr)
+```
+
+## Data Simulation
+
+```{r}
+set.seed(42)
+n = 10000
+x1 = rnorm(n)
+x2 = rnorm(n)
+x3 = rnorm(n)
+x = matrix(c(x1,x2,x3), nrow = n)
+```
+
+```{r}
+# data transformation
+bin_continuous = function(data, num_bins){
+  data = data.frame(cont = data)
+  new_data = data %>% transmute(disc = cut(cont, 
+                                           breaks = unique(quantile(cont, 
+                                                                    probs = seq.int(0,1,by = 1/num_bins))),
+                                           labels = seq(0,num_bins-1, by = 1),
+                                           include.lowest = TRUE))
+  return(new_data$disc)
+}
+```
+
+
+### data1: y = b1x1 + b2x2 + b3x3
+
+```{r}
+b1 = c(1,1,3)
+e1 = rnorm(n)
+y1 = x %*% b1 + e1
+range(y1)
+```
+
+```{r}
+# output data for other imputation method
+data1 = data.frame(x1 = bin_continuous(x1,3), 
+                  x2 = bin_continuous(x2,2), 
+                  x3 = bin_continuous(x3,3), 
+                  z = bin_continuous(y1,4))
+write.csv(data1, file = './data/sim_1.csv')
+
+```
+
+### data2: y = x1 + x2^2 + exp(x3)
+```{r}
+e2 = rnorm(n)
+y2 = x1 + x2^2 + exp(x3) + x1*x2 + x2*x3 + e2
+range(y2)
+```
+
+```{r}
+# output data for other imputation method
+data2 = data.frame(x1 = bin_continuous(x1,3), 
+                  x2 = bin_continuous(x2,2), 
+                  x3 = bin_continuous(x3,3),
+                  z = bin_continuous(y2,4))
+write.csv(data2, file = './data/sim_2.csv')
+```
+
+## MICE-CART
+
+```{r}
+file_name = "./data/sim_1.csv"
+model_name = "cart"
+save_name = "house"
+miss_mechanism = "MCAR"
+save_path = paste("./results/", save_name, "/", miss_mechanism,"/",model_name, sep = '')
+data_df = read.csv(file_name)
+```
+
+```{r}
+# change categorical variables into factors
+cat_index = 1:(dim(data_df)[2]-8)
+num_index = (dim(data_df)[2]-7) : dim(data_df)[2]
+
+data_df[,cat_index] = lapply(data_df[,cat_index], as.factor)
+```
+
+## Register cores
+```{r}
+cores = detectCores() - 1
+cluster = makeCluster(cores)
+clusterSetRNGStream(cluster, 9956)
+registerDoParallel(cluster)
+```
+
+## DEMO
+```{r}
+# preparation & read in data
+cores = detectCores() - 1
+cluster = makeCluster(cores)
+clusterSetRNGStream(cluster, 9956)
+registerDoParallel(cluster)
+
+i = 1
+file_name = paste("./samples/",save_name, '/',miss_mechanism, "/sample_",i,".csv", sep = '')
+data_x_i = read.csv(paste("./samples/",save_name, '/',"complete/sample_",i,".csv", sep = ''))
+data_miss_i = read.csv(file_name)
+data_m = 1 - is.na(data_miss_i)
+```
+
+```{r}
+#init
+init = mice(data_miss_i, maxit = 0)
+Meth = init$method
+predM = init$predictorMatrix
+```
+
+```{r}
+# demo expt
+set.seed(42)
+data_output_i = mice(data_miss_i, method = Meth, predictorMatrix = predM, m = 5)
+data_imputed_i = complete(data_output_i)
+```
+
+```{r}
+# check for output
+summary(data_imputed_i)
+```
+
+
+## Experiments
+```{r}
+#parallel
+sample_size = 10
+imputed_num = 10
+
+foreach(i = 0:(sample_size-1), .packages = c("mice"))%dopar%{
+  current_seed = 42+i
+  set.seed(current_seed)
+  file_name = paste("./samples/",save_name, '/',miss_mechanism, "/sample_",i,".csv", sep = '')
+  data_x_i = read.csv(paste("./samples/",save_name, '/',"complete/sample_",i,".csv", sep = ''))
+  data_miss_i = read.csv(file_name)
+  data_output_i = mice(data_miss_i, m = imputed_num)
+  for (j in 0:(imputed_num - 1)){
+    data_current_imputed = complete(data_output_i, j)
+    write.csv(data_current_imputed, paste(save_path, '/imputed_',i,'_',j,'.csv',sep = ''))
+  }
+}
+```
+

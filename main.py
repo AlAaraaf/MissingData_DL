@@ -30,15 +30,15 @@ if __name__ == '__main__':
                         'num_steps_phase2': 2,
                         'theta': 7}
 
-    gain_parameters = {'batch_size': 512,
+    gain_parameters = {'batch_size': 256,
                        'hint_rate': 0.13, # MAR
-                       'alpha': 10,
-                       'iterations': 50,
-                       'dlr':0.01,
-                       'glr':0.05,
+                       'alpha': 20,
+                       'iterations': 100,
+                       'dlr':0.005,
+                       'glr':0.025,
                        'd_gradstep':2,
                        'g_gradstep':1,
-                       'log_name':'gain_sim_2_tiny/tuning/'
+                       'log_name':'gain_sim_1/tuning/'
                        }
 
     # Load data
@@ -73,7 +73,7 @@ if __name__ == '__main__':
         all_levels = [np.unique(x) for x in data_x[:, cat_index].T]
         all_levels_dict = dict(zip(data_df.columns[cat_index], all_levels))
     
-    elif dataset == 'sim_1_tiny' or dataset == 'sim_2_tiny':
+    elif dataset == 'sim_1_tiny' or dataset == 'sim_2_tiny' or dataset == 'sim_1' or dataset == 'sim_2':
         num_index = list(range(0,0))
         cat_index = list(range(-data_df.shape[1],0))
         # get all possible levels for categorical variable

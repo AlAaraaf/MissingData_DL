@@ -1,11 +1,20 @@
+# for local
+# setwd('D:/sjx/ISU/projects/DataImputation/MissingData_DL')
+
 # load libraries
 library(mice)
 library(foreach)
 library(doParallel)
 library(dplyr)
 
+sample_size = 10
+imputed_num = 10
+
 # register cores
 cores = min(detectCores()-1, 50)
+if (cores > sample_size){
+  cores = sample_size
+}
 print(paste("Cores number: ",cores))
 cluster = makeCluster(cores)
 clusterSetRNGStream(cluster, 9956)
@@ -14,7 +23,7 @@ registerDoParallel(cluster)
 
 # preparation
 model_name = "cart"
-save_name = "sim_1_tiny"
+save_name = "sim_2"
 complete_filefolder = "complete_0.3_5000"
 miss_filefolder = "MCAR_0.3_5000"
 save_path = paste("./results/", save_name, "/", miss_filefolder,"/",model_name, sep = '')
@@ -22,8 +31,6 @@ dir.create(save_path, recursive = T)
 
 
 #parallel
-sample_size = 10
-imputed_num = 10
 
 print("Begin Training......")
 
