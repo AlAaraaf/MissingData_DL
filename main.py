@@ -49,7 +49,7 @@ if __name__ == '__main__':
     data_df = pd.read_csv(file_name)
     data_x = data_df.values.astype(np.float32)
 
-    save_path = "./results/{}/{}_{}_{}/{}".format(dataset, miss_mechanism,args.mr, args.size,model_name)
+    save_path = "../training_data/results/{}/{}_{}_{}/{}".format(dataset, miss_mechanism,args.mr, args.size,model_name)
     pathlib.Path(save_path).mkdir(parents=True, exist_ok=True)
 
     if dataset == 'house':
@@ -82,8 +82,8 @@ if __name__ == '__main__':
 
     rmse_ls = []
     i = args.id
-    file_name = './samples/{}/{}_{}_{}/sample_{}.csv'.format(dataset, miss_mechanism, args.mr, args.size, i)  
-    data_x_i = np.loadtxt('./samples/{}/complete_{}_{}/sample_{}.csv'.format(dataset, args.mr, args.size,i), delimiter=",").astype(np.float32)
+    file_name = '../training_data/samples/{}/{}_{}_{}/sample_{}.csv'.format(dataset, miss_mechanism, args.mr, args.size, i)  
+    data_x_i = np.loadtxt('../training_data/samples/{}/complete_{}_{}/sample_{}.csv'.format(dataset, args.mr, args.size,i), delimiter=",").astype(np.float32)
 
     miss_data_x = np.loadtxt(file_name, delimiter=",").astype(np.float32)
     data_m = 1 - np.isnan(miss_data_x).astype(np.float32)

@@ -17,6 +17,8 @@ def parse_args():
     parser.add_argument("-dataset", type = str, required=True)
     parser.add_argument("-model", type = str, required=True)
     parser.add_argument("-num", type = int, required=True) #number of samples
+    parser.add_argument("-mr", type = float, required=True) # missing rate
+    parser.add_argument("-size", type = int, required=True) # sample size
     parser.add_argument("-completedir", type = str, required=True)
     parser.add_argument("-missingdir", type = str, required = True)
     parser.add_argument("-imputedir", type = str, required=True)
@@ -25,18 +27,18 @@ def parse_args():
 # read pre_directions
 args = parse_args()
 dataset = args.dataset
-complete_data_folder = args.completedir
-missing_data_folder = args.missingdir
-imputed_data_folder = args.imputedir
+complete_data_folder = "../training_data/samples/{}/complete_{}_{}/".format(dataset, args.mr, args.sizes)
+missing_data_folder = "../training_data/samples/{}/MCAR_{}_{}/".format(dataset, args.mr, args.sizes)
+imputed_data_folder = "../training_data/results/{}/MCAR_{}_{}/".format(dataset, args.mr, args.sizes)
 
 numeric_variable_nums = dict([('boston', 12), ('house',8),
                               ('sim_1', 0),('sim_2',0), 
-                              ('sim_1_tiny',0), ('sim_2_tiny',0)])
+                              ('sim_1_tiny',0), ('sim_2_tiny',0),
+                              ('sim_m1',1), ('sim_m2',1), ('sim_m3',1), ('sim_m4',1)])
 if dataset not in numeric_variable_nums.keys():
     sys.exit("Wrong Dataset!")
 
 # Load data
-model_names = ["cart", "rf", "gain", "mida"]
 model_names = [args.model]
 num_samples = int(args.num)
 num_imputations = 10
@@ -154,10 +156,7 @@ for i in range(num_samples):
         print("{}th sample, model: {}".format(i, model_name))
         for l in range(num_imputations):
             # loading imputations
-            if model_name == "gain" or model_name == "cart" or model_name == "vaeac":
-                data_imputed = np.loadtxt(imputed_data_folder + '/imputed_{}_{}.csv'.format(i, l),delimiter=",").astype (np.float32)
-            if model_name =="rf":
-                data_imputed = pd.read_csv('./results/{}/{}/{}/imputed_{}_{}.csv'.format(save_name, miss_mechanism, model_name, i, l)).values.astype(np.float32)
+            data_imputed = np.loadtxt(imputed_data_folder + '/imputed_{}_{}.csv'.format(i, l),delimiter=",").astype (np.float32)
             # report accuracy
             mse[model_name].append(rmse_loss(data_i, data_imputed, data_m))
             # seperate categorical variables an d numerical variables

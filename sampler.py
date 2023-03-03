@@ -17,7 +17,7 @@ def parse_args():
     parser.add_argument("-mr", type = float, required=True) # missing rate
     parser.add_argument("-size", type = int, required=True) # sample size
     parser.add_argument("-seed", type = int, required=False, default = 42) # set seed
-    parser.add_argument("-missc", type = int, required=False, default=-1) # specify whether only impute on one variable
+    parser.add_argument("-missc", type = int, required=False, default=-1) # specify whether only impute on one variable (for simulation)
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -34,11 +34,11 @@ if __name__ == '__main__':
     miss_rate = float(args.mr)
     sample_size = int(args.size)
 
-    save_path_complete = "./samples/{}/complete_{}_{}".format(dataset,miss_rate, sample_size)
+    save_path_complete = "../training_data/samples/{}/complete_{}_{}".format(dataset,miss_rate, sample_size)
     if not os.path.exists(save_path_complete):
             os.makedirs(save_path_complete)
     
-    save_path_mcar = "./samples/{}/MCAR_{}_{}".format(dataset,miss_rate, sample_size)
+    save_path_mcar = "../training_data/samples/{}/MCAR_{}_{}".format(dataset,miss_rate, sample_size)
     if not os.path.exists(save_path_mcar):
             os.makedirs(save_path_mcar)
 
@@ -47,7 +47,7 @@ if __name__ == '__main__':
         sample_idx = sample_batch_index(no, sample_size, args.seed)
         data_x_i = data_x[sample_idx, :]
         no_i, dim_i = data_x_i.shape
-        save_path = "./samples/{}/complete_{}_{}/sample_{}.csv".format(dataset,miss_rate, sample_size, i)
+        save_path = "../training_data/samples/{}/complete_{}_{}/sample_{}.csv".format(dataset,miss_rate, sample_size, i)
         np.savetxt(save_path, data_x_i, delimiter=",")
 
         # Introduce missing data
@@ -61,7 +61,7 @@ if __name__ == '__main__':
             miss_data_x[data_m == 0] = np.nan
         
         # Save files
-        save_path = "./samples/{}/MCAR_{}_{}/sample_{}.csv".format(dataset,miss_rate, sample_size, i)
+        save_path = "../training_data/samples/{}/MCAR_{}_{}/sample_{}.csv".format(dataset,miss_rate, sample_size, i)
         np.savetxt(save_path, miss_data_x, delimiter=",")
 
 
