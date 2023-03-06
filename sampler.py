@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
     for i in trange(num_samples):
         # random samples
-        sample_idx = sample_batch_index(no, sample_size, args.seed)
+        sample_idx = sample_batch_index(no, sample_size, args.seed + i)
         data_x_i = data_x[sample_idx, :]
         no_i, dim_i = data_x_i.shape
         save_path = "../training_data/samples/{}/complete_{}_{}/sample_{}.csv".format(dataset,miss_rate, sample_size, i)
@@ -52,11 +52,11 @@ if __name__ == '__main__':
 
         # Introduce missing data
         if args.missc == -1:
-            data_m = binary_sampler(1 - miss_rate, no_i, dim_i, args.seed)
+            data_m = binary_sampler(1 - miss_rate, no_i, dim_i, args.seed + i)
             miss_data_x = data_x_i.copy()
             miss_data_x[data_m == 0] = np.nan
         else:
-            data_m = response_sampler(1 - miss_rate, no_i, dim_i, args.missc, args.seed)
+            data_m = response_sampler(1 - miss_rate, no_i, dim_i, args.missc, args.seed + i)
             miss_data_x = data_x_i.copy()
             miss_data_x[data_m == 0] = np.nan
         

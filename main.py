@@ -38,7 +38,7 @@ if __name__ == '__main__':
                        'glr':0.025,
                        'd_gradstep':2,
                        'g_gradstep':1,
-                       'log_name':'gain_sim_1/tuning/'
+                       'log_name':'gain_sim_m1/tuning/'
                        }
 
     # Load data
@@ -76,6 +76,13 @@ if __name__ == '__main__':
     elif dataset == 'sim_1_tiny' or dataset == 'sim_2_tiny' or dataset == 'sim_1' or dataset == 'sim_2':
         num_index = list(range(0,0))
         cat_index = list(range(-data_df.shape[1],0))
+        # get all possible levels for categorical variable
+        all_levels = [np.unique(x) for x in data_x[:, cat_index].T]
+        all_levels_dict = dict(zip(data_df.columns[cat_index], all_levels))
+    
+    elif "sim_m" in dataset:
+        num_index = list(range(-1,0))
+        cat_index = list(range(-data_df.shape[1], -1))
         # get all possible levels for categorical variable
         all_levels = [np.unique(x) for x in data_x[:, cat_index].T]
         all_levels_dict = dict(zip(data_df.columns[cat_index], all_levels))
