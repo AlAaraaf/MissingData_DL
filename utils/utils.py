@@ -181,7 +181,7 @@ def initial_imputation(data_raw, cat_index, num_index):
     data = data_raw.copy()
     # replace nan in categorical variable by the most frequent value
     if cat_index:
-        common_value = np.apply_along_axis(lambda x: np.bincount(x[~np.isnan(x)].astype(np.int)).argmax(), 0,
+        common_value = np.apply_along_axis(lambda x: np.bincount(x[~np.isnan(x)].astype(np.int64)).argmax(), 0,
                                            data[:, cat_index])
         for j in range(len(cat_index)):
             data[np.isnan(data[:, cat_index[j]]), cat_index[j]] = common_value[j]
@@ -201,7 +201,7 @@ def onehot_encoding(data, data_m, all_levels, has_miss=False):
     col_idx = 0
     for j in range(dim):
         colj_nlevel = len(all_levels[j])
-        colj = data_filled[:, j].astype(np.int)
+        colj = data_filled[:, j].astype(np.int64)
         miss_j = np.repeat(data_m[:, j].reshape([-1, 1]), colj_nlevel,axis=1)
         enc_j = np.eye(colj_nlevel)[colj]
         if has_miss:

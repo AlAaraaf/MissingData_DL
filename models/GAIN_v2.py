@@ -195,7 +195,7 @@ def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num
     G_solver = tf.optimizers.Adam(generator_lr)
 
     # Tensorboard Setting
-    writer = SummaryWriter('runs/' + writer_dir + TIMESTAMP)
+    writer = SummaryWriter('F:/repos/runs/' + writer_dir + TIMESTAMP)
 
     # Start Iterations
     Gloss_list = []
