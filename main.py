@@ -42,15 +42,15 @@ if __name__ == '__main__':
                         'num_steps_phase2': 2,
                         'theta': 7}
 
-    gain_parameters = {'batch_size': 256,
+    gain_parameters = {'batch_size': args.batch_size,
                        'hint_rate': 0.13, # MAR
-                       'alpha': 20,
-                       'iterations': 100,
-                       'dlr':0.005,
-                       'glr':0.025,
-                       'd_gradstep':2,
-                       'g_gradstep':1,
-                       'log_name':'gain_sim_m1/tuning/'
+                       'alpha': args.alpha,
+                       'iterations': args.iterations,
+                       'dlr':args.dlr,
+                       'glr':args.glr,
+                       'd_gradstep':args.d_gradstep,
+                       'g_gradstep':args.g_gradstep,
+                       'log_name':args.log_name
                        }
     
     gain_qreg_parameters = {'batch_size': args.batch_size,
