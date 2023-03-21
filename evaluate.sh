@@ -1,5 +1,17 @@
 #!/bin/bash
-python ./calculate_estimands.py -dataset sim_1_tiny -model gain -num 10 -completedir ./samples/sim_1_tiny/complete_0.3_5000/ -missingdir ./samples/sim_1_tiny/MCAR_0.3_5000/ -imputedir ./results/sim_1_tiny/MCAR_0.3_5000/gain/
-python ./evaluate_estimands.py -dataset sim_1_tiny -model gain
-python ./show_tables.py -dataset sim_1_tiny -output gain_sim_1_tiny_0.3_5000
+python ./calculate_estimands.py -dataset house -model gain -num 1 -mr 0.3 -size 10000 -completedir ../training_data/samples/house/complete_0.3_10000/ -missingdir ../training_data/samples/house/MCAR_0.3_10000/ -imputedir ../training_data/results/house/MCAR_0.3_10000/gain/
+python ./evaluate_estimands.py -dataset house -model gain
+python ./show_tables.py -dataset house -output ../metrics/gain_0.3_10000
+
+# python ./calculate_estimands.py -dataset house -model cart -num 1 -mr 0.3 -size 10000 -completedir ../training_data/samples/house/complete_0.3_10000/ -missingdir ../training_data/samples/house/MCAR_0.3_10000/ -imputedir ../training_data/results/house/MCAR_0.3_10000/cart/
+# python ./evaluate_estimands.py -dataset house -model cart
+# python ./show_tables.py -dataset house -output ../metrics/cart_0.3_10000
+
+python ./calculate_estimands.py -dataset house -model vaeac -num 1 -mr 0.3 -size 10000 -completedir ../training_data/samples/house/complete_0.3_10000/ -missingdir ../training_data/samples/house/MCAR_0.3_10000/ -imputedir ../training_data/results/house/MCAR_0.3_10000/vaeac/
+python ./evaluate_estimands.py -dataset house -model vaeac
+python ./show_tables.py -dataset house -output ../metrics/vaeac_0.3_10000
+
+# python ./calculate_estimands.py -dataset house -model gain_qreg -num 1 -mr 0.3 -size 10000 -completedir ../training_data/samples/house/complete_0.3_10000/ -missingdir ../training_data/samples/house/MCAR_0.3_10000/ -imputedir ../training_data/results/house/MCAR_0.3_10000/gain_qreg/
+# python ./evaluate_estimands.py -dataset house -model gain_qreg
+# python ./show_tables.py -dataset house -output ../metrics/gain_qreg_0.3_10000
 echo 'finish'
