@@ -7,7 +7,7 @@ library(foreach)
 library(doParallel)
 library(dplyr)
 
-sample_size = 10
+sample_size = 1
 imputed_num = 10
 
 # register cores
@@ -23,10 +23,10 @@ registerDoParallel(cluster)
 
 # preparation
 model_name = "cart"
-save_name = "sim_2"
+save_name = "sim_m4"
 complete_filefolder = "complete_0.3_5000"
 miss_filefolder = "MCAR_0.3_5000"
-save_path = paste("./results/", save_name, "/", miss_filefolder,"/",model_name, sep = '')
+save_path = paste("../training_data/results/", save_name, "/", miss_filefolder,"/",model_name, sep = '')
 dir.create(save_path, recursive = T)
 
 
@@ -39,12 +39,12 @@ foreach(i = 0:(sample_size-1), .packages = c("mice"))%dopar%{
   current_seed = 42+i
   set.seed(current_seed)
   
-  missing_file = paste("./samples/",save_name, '/',miss_filefolder, "/sample_",i,".csv", sep = '')
+  missing_file = paste("../training_data/samples/",save_name, '/',miss_filefolder, "/sample_",i,".csv", sep = '')
   data_miss_i = read.csv(missing_file, header = FALSE)
   
   print("Change variable types......")
   # change categorical variables into factors
-  cat_index = 1:(dim(data_miss_i)[2])
+  cat_index = 1:(dim(data_miss_i)[2]-1)
   data_miss_i[,cat_index] = lapply(data_miss_i[,cat_index], as.factor)
   
   # set NAN level back to NA
