@@ -10,12 +10,14 @@ import argparse
 
 from models.MIDA_v2 import autoencoder_imputation
 from models.GAIN_v2 import gain
+from models.GAIN_qreg import gain_qrg
 from utils.utils import rmse_loss
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-id", type = int, required=True)
     parser.add_argument("-dataset", type = str, required = True)
+    parser.add_argument("-model", type = str, required = True)
     parser.add_argument("-mr", type = float, required=True) # missing rate
     parser.add_argument("-size", type = int, required=True) # sample size
     return parser.parse_args()
@@ -40,11 +42,22 @@ if __name__ == '__main__':
                        'g_gradstep':1,
                        'log_name':'gain_sim_m1/tuning/'
                        }
+    
+    gain_qreg_parameters = {'batch_size': 256,
+                       'hint_rate': 0.13, # MAR
+                       'alpha': 20,
+                       'iterations': 100,
+                       'dlr':0.0005,
+                       'glr':0.0025,
+                       'd_gradstep':1,
+                       'g_gradstep':1,
+                       'log_name':'gain_house/tuning/'
+                       }
 
     # Load data
     dataset = args.dataset
     file_name = './data/' + dataset + '.csv'
-    model_name = "gain"
+    model_name = args.model
     miss_mechanism = "MCAR"
     data_df = pd.read_csv(file_name)
     data_x = data_df.values.astype(np.float32)
@@ -98,6 +111,11 @@ if __name__ == '__main__':
         imputed_list, loss_list = autoencoder_imputation(miss_data_x, data_m,
                                                             cat_index, num_index,
                                                             all_levels, DAE_parameters, 10)
+    if model_name == "gain_qreg":
+        imputed_list, Gloss_list, Dloss_list = gain_qrg(miss_data_x, data_m,
+                                                        cat_index, num_index,
+                                                        all_levels, gain_qreg_parameters, 10)
+    
     if model_name == "gain":
         imputed_list, Gloss_list, Dloss_list = gain(miss_data_x, data_m,
                                                         cat_index, num_index,

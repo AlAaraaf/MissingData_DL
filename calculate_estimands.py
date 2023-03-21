@@ -27,9 +27,9 @@ def parse_args():
 # read pre_directions
 args = parse_args()
 dataset = args.dataset
-complete_data_folder = "../training_data/samples/{}/complete_{}_{}/".format(dataset, args.mr, args.sizes)
-missing_data_folder = "../training_data/samples/{}/MCAR_{}_{}/".format(dataset, args.mr, args.sizes)
-imputed_data_folder = "../training_data/results/{}/MCAR_{}_{}/".format(dataset, args.mr, args.sizes)
+complete_data_folder = "../training_data/samples/{}/complete_{}_{}/".format(dataset, args.mr, args.size)
+missing_data_folder = "../training_data/samples/{}/MCAR_{}_{}/".format(dataset, args.mr, args.size)
+imputed_data_folder = "../training_data/results/{}/MCAR_{}_{}/{}/".format(dataset, args.mr, args.size, args.model)
 
 numeric_variable_nums = dict([('boston', 12), ('house',8),
                               ('sim_1', 0),('sim_2',0), 

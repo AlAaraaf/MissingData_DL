@@ -15,7 +15,6 @@ def parse_args():
 args = parse_args()
 
 # Load data
-model_names = ["cart", "rf", "gain", "mida"]
 model_names = [args.model]
 miss_mechanism = "MCAR"
 
