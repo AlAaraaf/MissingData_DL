@@ -20,6 +20,16 @@ def parse_args():
     parser.add_argument("-model", type = str, required = True)
     parser.add_argument("-mr", type = float, required=True) # missing rate
     parser.add_argument("-size", type = int, required=True) # sample size
+
+    # hyper params
+    parser.add_argument("-batch_size", type = int, required = True)
+    parser.add_argument("-alpha", type = int, required = True)
+    parser.add_argument("-iterations", type = int, required = True)
+    parser.add_argument("-dlr", type = float, required=True)
+    parser.add_argument("-glr", type = float, required = True)
+    parser.add_argument("-d_gradstep", type=int, required=True)
+    parser.add_argument("-g_gradstep", type=int, required=True)
+    parser.add_argument("-log_name", type=str, required=True)
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -43,15 +53,15 @@ if __name__ == '__main__':
                        'log_name':'gain_sim_m1/tuning/'
                        }
     
-    gain_qreg_parameters = {'batch_size': 256,
+    gain_qreg_parameters = {'batch_size': args.batch_size,
                        'hint_rate': 0.13, # MAR
-                       'alpha': 20,
-                       'iterations': 100,
-                       'dlr':0.0005,
-                       'glr':0.0025,
-                       'd_gradstep':1,
-                       'g_gradstep':1,
-                       'log_name':'gain_house/tuning/'
+                       'alpha': args.alpha,
+                       'iterations': args.iterations,
+                       'dlr':args.dlr,
+                       'glr':args.glr,
+                       'd_gradstep':args.d_gradstep,
+                       'g_gradstep':args.g_gradstep,
+                       'log_name':args.log_name
                        }
 
     # Load data
