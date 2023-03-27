@@ -12,12 +12,12 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-type=FAIL
 
-module load python/3.10.8-5qsesua
-source /work/LAS/zhanruic-lab/jiaxin/vaeac/jiaxin/bin/activate
+#module load python/3.10.8-5qsesua
+#source /work/LAS/zhanruic-lab/jiaxin/vaeac/jiaxin/bin/activate
 
 degree=1
 model_name="gain_qreg"
-dataset="house"
+dataset="income"
 mr=0.3
 sample_size=10000
 sample_id=$1
