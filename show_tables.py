@@ -33,8 +33,8 @@ save_loc = args.output + "_relative_metrics50.tex"
 
 # check numerical and categorical variable numbers.
 if save_name == 'income':
-    num_index = list([9, 16, 18, 19])
-    cat_index = list(set(range(data_df.shape[1])).difference(set(num_index)))
+    num_index = 4
+    cat_index = data_df.shape[1]-4
 else:
     num_index = numeric_variable_nums[save_name]
     cat_index = data_df.shape[1]-numeric_variable_nums[save_name]

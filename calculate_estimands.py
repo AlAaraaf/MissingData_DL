@@ -10,7 +10,7 @@ import pathlib
 import argparse
 
 from utils.utils import rmse_loss, get_bins_from_numerical
-from evaluation.performance_metric import marginal_estimands, bivariate_estimands, house_bins
+from evaluation.performance_metric import marginal_estimands, bivariate_estimands, house_bins, income_bins
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -89,8 +89,8 @@ if num_index:
         data_bin_pop_ls, bins = zip(*data_num_pop_df.apply(pd.qcut, 0, q=8, labels = False, retbins=True, duplicates="drop"))
         data_bin_pop_df = pd.concat(data_bin_pop_ls, axis=1)
     else:
-        bins = house_bins
-        data_bin_pop_df = get_bins_from_numerical(data_num_pop_df, house_bins)
+        bins = house_bins if save_name == 'house' else income_bins
+        data_bin_pop_df = get_bins_from_numerical(data_num_pop_df, bins)
     # get all possible levels
     bin_all_levels = [np.unique(x) for x in data_bin_pop_df.values.T]
     bin_all_levels_dict = dict(zip(data_df.columns[num_index], bin_all_levels))
