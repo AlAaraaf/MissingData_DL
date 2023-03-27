@@ -26,7 +26,10 @@ if __name__ == '__main__':
     dataset = args.data
 
     file_name = 'data/' + dataset + '.csv'
-    data_df = pd.read_csv(file_name)
+    if (dataset == "house" or dataset == "income"):
+        data_df = pd.read_csv(file_name, header=None)
+    else:
+        data_df = pd.read_csv(file_name)
     no, dim = data_df.shape
 
     data_x = data_df.values.astype(np.float32)
