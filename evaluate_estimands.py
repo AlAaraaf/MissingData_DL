@@ -28,11 +28,15 @@ n = 10000
 
 # Variable type
 numeric_variable_nums = dict([('boston', 12), ('house',8),('sim_1', 0),('sim_2',0), ('sim_1_tiny',0), ('sim_2_tiny',0)])
-if args.dataset not in numeric_variable_nums.keys():
+if args.dataset not in numeric_variable_nums.keys() and args.dataset != 'income':
     sys.exit("Wrong Dataset!")
 
-num_index = list(range(-numeric_variable_nums[args.dataset], 0))
-cat_index = list(range(-data_df.shape[1], -numeric_variable_nums[args.dataset]))
+if args.dataset == 'income':
+    num_index = list([9, 16, 18, 19])
+    cat_index = list(set(range(data_df.shape[1])).difference(set(num_index)))
+else:
+    num_index = list(range(-numeric_variable_nums[args.dataset], 0))
+    cat_index = list(range(-data_df.shape[1], -numeric_variable_nums[args.dataset]))
 
 save_path = "../metrics/{}/{}".format(save_name, miss_mechanism)
 pathlib.Path(save_path).mkdir(parents=True, exist_ok=True)

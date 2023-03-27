@@ -20,7 +20,7 @@ args = parse_args()
 # Load data
 save_name = args.dataset
 numeric_variable_nums = dict([('boston', 12), ('house',8),('sim_1', 0),('sim_2',0), ('sim_1_tiny',0), ('sim_2_tiny',0)])
-if save_name not in numeric_variable_nums.keys():
+if save_name not in numeric_variable_nums.keys() and save_name != 'income':
     sys.exit("Wrong Dataset!")
 
 miss_mechanism = "MCAR"
@@ -32,8 +32,12 @@ save_mode = "w"
 save_loc = args.output + "_relative_metrics50.tex"
 
 # check numerical and categorical variable numbers.
-num_index = numeric_variable_nums[save_name]
-cat_index = data_df.shape[1]-numeric_variable_nums[save_name]
+if save_name == 'income':
+    num_index = list([9, 16, 18, 19])
+    cat_index = list(set(range(data_df.shape[1])).difference(set(num_index)))
+else:
+    num_index = numeric_variable_nums[save_name]
+    cat_index = data_df.shape[1]-numeric_variable_nums[save_name]
 
 # load cat
 if cat_index > 0:

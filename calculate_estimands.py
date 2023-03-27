@@ -35,7 +35,7 @@ numeric_variable_nums = dict([('boston', 12), ('house',8),
                               ('sim_1', 0),('sim_2',0), 
                               ('sim_1_tiny',0), ('sim_2_tiny',0),
                               ('sim_m1',1), ('sim_m2',1), ('sim_m3',1), ('sim_m4',1)])
-if dataset not in numeric_variable_nums.keys():
+if dataset not in numeric_variable_nums.keys() and dataset != 'income':
     sys.exit("Wrong Dataset!")
 
 # Load data
@@ -49,8 +49,12 @@ file_name = './data/' + save_name + '.csv'
 data_df = pd.read_csv(file_name)
 data_x = data_df.values.astype(np.float32)
 
-num_index = list(range(-numeric_variable_nums[dataset], 0))
-cat_index = list(range(-data_df.shape[1], -numeric_variable_nums[dataset]))
+if dataset == 'income':
+    num_index = list([9, 16, 18, 19])
+    cat_index = list(set(range(data_df.shape[1])).difference(set(num_index)))
+else:
+    num_index = list(range(-numeric_variable_nums[dataset], 0))
+    cat_index = list(range(-data_df.shape[1], -numeric_variable_nums[dataset]))
 
 # Parameters
 no, dim = data_x.shape
