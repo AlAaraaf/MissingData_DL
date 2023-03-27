@@ -44,7 +44,7 @@ do
 
             python ./calculate_estimands.py -dataset $dataset -model $model_name -num 1 -mr $mr -size $sample_size -completedir ../training_data/samples/${dataset}/complete_${mr}_${sample_size}/ -missingdir ../training_data/samples/${dataset}/MCAR_${mr}_${sample_size}/ -imputedir ../training_data/results/$dataset/MCAR_${mr}_${sample_size}/$model_name/
             python ./evaluate_estimands.py -dataset $dataset -model $model_name
-            python ./show_tables.py -dataset $dataset -output ../metrics/${model_name}_${mr}_${sample_size}_${sample_id}_${dlr_list[$lr_i]}_${glr_list[$lr_i]}_${d_step[$ds_i]}_${g_step[$gs_i]}
+            python ./show_tables.py -dataset $dataset -output ../metrics/$dataset/${model_name}_${mr}_${sample_size}_${sample_id}_${dlr_list[$lr_i]}_${glr_list[$lr_i]}_${d_step[$ds_i]}_${g_step[$gs_i]}
         done 
     done
 done
