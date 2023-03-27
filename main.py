@@ -83,7 +83,7 @@ if __name__ == '__main__':
         all_levels_dict = dict(zip(data_df.columns[cat_index], all_levels))
 
     elif dataset == 'income':
-        num_index = list(9, 16, 18, 19)
+        num_index = list([9, 16, 18, 19])
         cat_index = list(set(range(data_df.shape[1])).difference(set(num_index)))
         # get all possible levels for categorical variable
         all_levels = [np.unique(x) for x in data_x[:, cat_index].T]
@@ -118,7 +118,7 @@ if __name__ == '__main__':
         all_levels_dict = dict(zip(data_df.columns[cat_index], all_levels))
     
     else:
-        print("Wrong dataset!")
+        print("Wrong dataset: {}".format(dataset))
 
     rmse_ls = []
     i = args.id
