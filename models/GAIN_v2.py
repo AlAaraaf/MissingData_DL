@@ -228,6 +228,13 @@ def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num
             writer.add_scalar('Gloss', G_loss_curr.numpy(), i)
             writer.add_scalar('Rloss', reconstructloss.numpy(), i)
 
+            if (i > 0.5*len(pbar)):
+                swap = d_grad_step
+                d_grad_step = g_grad_step
+                g_grad_step = swap
+
+
+
     ## Return imputed data
     imputed_list = []
     for l in range(num_imputations):

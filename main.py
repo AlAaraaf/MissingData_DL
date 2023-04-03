@@ -140,7 +140,9 @@ if __name__ == '__main__':
         imputed_list, Gloss_list, Dloss_list = gain(miss_data_x, data_m,
                                                         cat_index, num_index,
                                                         all_levels, gain_parameters, 10)
+    
 
     for l in range(num_imputations):
+        print(rmse_loss(data_x_i, imputed_list[l], data_m))
         np.savetxt(os.path.join(save_path, "imputed_{}_{}.csv".format(i, l)), imputed_list[l], delimiter=",")
     print("{} done!".format(i))
