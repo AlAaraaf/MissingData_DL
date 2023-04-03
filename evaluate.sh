@@ -1,17 +1,12 @@
 #!/bin/bash
-# python ./calculate_estimands.py -dataset house -model gain -num 1 -mr 0.3 -size 10000 -completedir ../training_data/samples/house/complete_0.3_10000/ -missingdir ../training_data/samples/house/MCAR_0.3_10000/ -imputedir ../training_data/results/house/MCAR_0.3_10000/gain/
-# python ./evaluate_estimands.py -dataset house -model gain
-# python ./show_tables.py -dataset house -output ../metrics/gain_0.3_10000
+model='cart'
+dataset='income'
+sample_id=0
+mr=0.3
+sample_size=20000
 
-# python ./calculate_estimands.py -dataset house -model cart -num 1 -mr 0.3 -size 10000 -completedir ../training_data/samples/house/complete_0.3_10000/ -missingdir ../training_data/samples/house/MCAR_0.3_10000/ -imputedir ../training_data/results/house/MCAR_0.3_10000/cart/
-# python ./evaluate_estimands.py -dataset house -model cart
-# python ./show_tables.py -dataset house -output ../metrics/cart_0.3_10000
+python ./calculate_estimands.py -dataset $dataset -model $model -num 1 -mr $mr -size $sample_size -completedir ../training_data/samples/$dataset/complete_${mr}_${sample_size}/ -missingdir ../training_data/samples/$dataset/MCAR_${mr}_${sample_size}/ -imputedir ../training_data/results/$dataset/MCAR_${mr}_${sample_size}/$model/
+python ./evaluate_estimands.py -dataset $dataset -model $model
+python ./show_tables.py -dataset $dataset -output ../metrics/$dataset/${model}_${mr}_${sample_size}
 
-python ./calculate_estimands.py -dataset house -model vaeac -num 1 -mr 0.3 -size 10000 -completedir ../training_data/samples/house/complete_0.3_10000/ -missingdir ../training_data/samples/house/MCAR_0.3_10000/ -imputedir ../training_data/results/house/MCAR_0.3_10000/vaeac/
-python ./evaluate_estimands.py -dataset house -model vaeac
-python ./show_tables.py -dataset house -output ../metrics/vaeac_0.3_10000
-
-# python ./calculate_estimands.py -dataset house -model gain_qreg -num 1 -mr 0.3 -size 10000 -completedir ../training_data/samples/house/complete_0.3_10000/ -missingdir ../training_data/samples/house/MCAR_0.3_10000/ -imputedir ../training_data/results/house/MCAR_0.3_10000/gain_qreg/
-# python ./evaluate_estimands.py -dataset house -model gain_qreg
-# python ./show_tables.py -dataset house -output ../metrics/gain_qreg_0.3_10000
 echo 'finish'
