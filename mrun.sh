@@ -17,13 +17,13 @@
 
 degree=1
 model_name="gain"
-dataset="income"
+dataset="nhanes"
 mr=0.3
-sample_size=20000
+sample_size=5000
 sample_id=$1
-dlr_list=(0.002)
-glr_list=(0.001)
-d_step=(3)
+dlr_list=(0.0005)
+glr_list=(0.0003)
+d_step=(1)
 g_step=(1)
 
 for lr_i in `seq 0 0`
@@ -33,9 +33,9 @@ do
         for gs_i in `seq 0 0`
         do
             python ./main.py -id $sample_id -dataset $dataset -model $model_name -mr $mr -size $sample_size \
-            -batch_size 256 \
+            -batch_size 64 \
             -alpha 20 \
-            -iterations 100 \
+            -iterations 30 \
             -dlr ${dlr_list[$lr_i]} \
             -glr ${glr_list[$lr_i]} \
             -d_gradstep ${d_step[$ds_i]} \
