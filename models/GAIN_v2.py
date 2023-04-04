@@ -73,11 +73,11 @@ def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num
     G_b2 = tf.Variable(tf.zeros(shape = [int(0.5*h_Gdim)]))
     G_h2BN = BatchNormalization()
 
-    G_W3 = tf.Variable(xavier_init([int(0.5*h_Gdim), h_Gdim]))
-    G_b3 = tf.Variable(tf.zeros(shape = [h_Gdim]))
-    G_h3BN = BatchNormalization()
+    # G_W3 = tf.Variable(xavier_init([int(0.5*h_Gdim), h_Gdim]))
+    # G_b3 = tf.Variable(tf.zeros(shape = [h_Gdim]))
+    # G_h3BN = BatchNormalization()
 
-    G_W4 = tf.Variable(xavier_init([h_Gdim, input_dim]))
+    G_W4 = tf.Variable(xavier_init([int(0.5*h_Gdim), input_dim]))
     G_b4 = tf.Variable(tf.zeros(shape = [input_dim]))
 
     theta_G = [G_W1, G_W4, G_b1, G_b4]
@@ -95,10 +95,10 @@ def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num
         G_h2 = tf.nn.leaky_relu(tf.matmul(G_h1, G_W2) + G_b2)
         G_h2 = G_h2BN(G_h2)
         
-        G_h3 = tf.nn.leaky_relu(tf.matmul(G_h2, G_W3) + G_b3)
-        G_h3 = G_h3BN(G_h3)
+        # G_h3 = tf.nn.leaky_relu(tf.matmul(G_h2, G_W3) + G_b3)
+        # G_h3 = G_h3BN(G_h3)
 
-        G_logit = tf.matmul(G_h3, G_W4) + G_b4
+        G_logit = tf.matmul(G_h2, G_W4) + G_b4
 
         col_index = 0
         empty_G_out = True
@@ -229,9 +229,7 @@ def gain (data_x, data_m, cat_index, num_index, all_levels, gain_parameters, num
             writer.add_scalar('Rloss', reconstructloss.numpy(), i)
 
             if (i > 0.5*len(pbar)):
-                swap = d_grad_step
-                d_grad_step = g_grad_step
-                g_grad_step = swap
+                g_grad_step = d_grad_step
 
 
 

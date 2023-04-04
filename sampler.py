@@ -26,7 +26,7 @@ if __name__ == '__main__':
     dataset = args.data
 
     file_name = 'data/' + dataset + '.csv'
-    if (dataset == "house" or dataset == "income"):
+    if (dataset == "house" or dataset == "income" or dataset == 'nhanes'):
         data_df = pd.read_csv(file_name)
     else:
         data_df = pd.read_csv(file_name, header = None)

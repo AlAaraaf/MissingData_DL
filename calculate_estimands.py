@@ -34,7 +34,8 @@ imputed_data_folder = "../training_data/results/{}/MCAR_{}_{}/{}/".format(datase
 numeric_variable_nums = dict([('boston', 12), ('house',8),
                               ('sim_1', 0),('sim_2',0), 
                               ('sim_1_tiny',0), ('sim_2_tiny',0),
-                              ('sim_m1',1), ('sim_m2',1), ('sim_m3',1), ('sim_m4',1)])
+                              ('sim_m1',1), ('sim_m2',1), ('sim_m3',1), ('sim_m4',1),
+                              ('nhanes',11)])
 if dataset not in numeric_variable_nums.keys() and dataset != 'income':
     sys.exit("Wrong Dataset!")
 
@@ -89,7 +90,7 @@ if num_index:
         data_bin_pop_ls, bins = zip(*data_num_pop_df.apply(pd.qcut, 0, q=8, labels = False, retbins=True, duplicates="drop"))
         data_bin_pop_df = pd.concat(data_bin_pop_ls, axis=1)
     else:
-        bins = house_bins if save_name == 'house' else income_bins
+        bins = house_bins if save_name == 'house' else income_bins if save_name == 'income' else None
         data_bin_pop_df = get_bins_from_numerical(data_num_pop_df, bins)
     # get all possible levels
     bin_all_levels = [np.unique(x) for x in data_bin_pop_df.values.T]

@@ -231,10 +231,15 @@ def onehot_decoding(data_enc, data_m_enc, all_levels, has_miss=False):
 
 def get_bins_from_numerical(num_df, bins):
     data_bin_ls = []
-    for i in range(len(bins)):
-        col = num_df.columns[i]
-        data_bin_ls.append(pd.cut(num_df[col], bins=bins[i], labels = False))
-    data_bin_df = pd.concat(data_bin_ls, axis=1)
+    if bins == None:
+      for column in num_df.columns:
+          data_bin_ls.append(pd.cut(num_df[column], bins = 4, labels = False))
+      data_bin_df = pd.concat(data_bin_ls, axis = 1)
+    else:
+      for i in range(len(bins)):
+          col = num_df.columns[i]
+          data_bin_ls.append(pd.cut(num_df[col], bins=bins[i], labels = False))
+      data_bin_df = pd.concat(data_bin_ls, axis=1)
     return data_bin_df
 
 

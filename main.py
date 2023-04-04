@@ -88,6 +88,13 @@ if __name__ == '__main__':
         # get all possible levels for categorical variable
         all_levels = [np.unique(x) for x in data_x[:, cat_index].T]
         all_levels_dict = dict(zip(data_df.columns[cat_index], all_levels))
+    
+    elif dataset =='nhanes':
+        num_index = list(range(-10,0))
+        cat_index = list(range(0,10))
+        # get all possible levels for categorical variable
+        all_levels = [np.unique(x) for x in data_x[:, cat_index].T]
+        all_levels_dict = dict(zip(data_df.columns[cat_index], all_levels))
 
     elif dataset == 'boston':
         num_index = list(range(-12, 0))
