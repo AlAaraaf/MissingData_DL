@@ -20,16 +20,16 @@ def parse_args():
     parser.add_argument("-missc", type = int, required=False, default=-1) # specify whether only impute on one variable (for simulation)
     return parser.parse_args()
 
+## For missc parameter, if missc == -1, all columns will have missing lines.
+## Otherwise, missc will specify a 0-based column index for generating missing lines.
+
 if __name__ == '__main__':
     # Load data
     args = parse_args()
     dataset = args.data
 
-    file_name = 'data/' + dataset + '.csv'
-    if (dataset == "house" or dataset == "income" or dataset == 'nhanes'):
-        data_df = pd.read_csv(file_name)
-    else:
-        data_df = pd.read_csv(file_name, header = None)
+    file_name = '../training_data/origin/' + dataset + '.csv'
+    data_df = pd.read_csv(file_name)
     no, dim = data_df.shape
 
     data_x = data_df.values.astype(np.float32)
@@ -55,10 +55,12 @@ if __name__ == '__main__':
 
         # Introduce missing data
         if args.missc == -1:
+            # missing value across all variables
             data_m = binary_sampler(1 - miss_rate, no_i, dim_i, args.seed + i)
             miss_data_x = data_x_i.copy()
             miss_data_x[data_m == 0] = np.nan
         else:
+            # missing value at single variable
             data_m = response_sampler(1 - miss_rate, no_i, dim_i, args.missc, args.seed + i)
             miss_data_x = data_x_i.copy()
             miss_data_x[data_m == 0] = np.nan
