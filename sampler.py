@@ -23,6 +23,13 @@ def parse_args():
 ## For missc parameter, if missc == -1, all columns will have missing lines.
 ## Otherwise, missc will specify a 0-based column index for generating missing lines.
 
+sys.argv(['-data','sim1',
+          '-num_samp',1,
+          '-mr', 0.3,
+          '-size', 10000,
+          '-seed',1234,
+          '-missc', 5])
+
 if __name__ == '__main__':
     # Load data
     args = parse_args()
