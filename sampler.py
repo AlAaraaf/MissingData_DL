@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import sys
 import numpy as np
 import pandas as pd
 import argparse
@@ -23,12 +24,13 @@ def parse_args():
 ## For missc parameter, if missc == -1, all columns will have missing lines.
 ## Otherwise, missc will specify a 0-based column index for generating missing lines.
 
-sys.argv(['-data','sim1',
-          '-num_samp',1,
-          '-mr', 0.3,
-          '-size', 10000,
-          '-seed',1234,
-          '-missc', 5])
+sys.argv = [sys.argv[0],
+            '-data', 'sim1',
+            '-num_samp', '1',
+            '-mr', '0.3',
+            '-size', '10000',
+            '-seed', '1234',
+            '-missc', '5']
 
 if __name__ == '__main__':
     # Load data
