@@ -78,7 +78,7 @@ if __name__ == '__main__':
     data_x_i, miss_data_x, data_m, all_levels_dict = load_dataset(dataset, miss_mechanism, args.mr, args.size, args.id)
     cat_index = all_levels_dict['cat_index']
     num_index = all_levels_dict['num_index']
-    all_levels = all_levels_dict['levels']
+    all_levels = list(all_levels_dict['levels'].values())
 
     if model_name == "mida":
         imputed_list, loss_list = autoencoder_imputation(miss_data_x, data_m,
