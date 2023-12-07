@@ -37,12 +37,6 @@ if __name__ == '__main__':
     args = parse_args()
     num_imputations = 10
 
-    DAE_parameters = {'learning_rate': 0.001,
-                        'batch_size': 512,
-                        'num_steps_phase1': 200,
-                        'num_steps_phase2': 2,
-                        'theta': 7}
-
     gain_parameters = {'batch_size': args.batch_size,
                        'hint_rate': 0.13, # MAR
                        'alpha': args.alpha,
@@ -80,10 +74,6 @@ if __name__ == '__main__':
     num_index = all_levels_dict['num_index']
     all_levels = list(all_levels_dict['levels'].values())
 
-    if model_name == "mida":
-        imputed_list, loss_list = autoencoder_imputation(miss_data_x, data_m,
-                                                            cat_index, num_index,
-                                                            all_levels, DAE_parameters, 10)
     if model_name == "gain_qreg":
         imputed_list, Gloss_list, Dloss_list = gain_qrg(miss_data_x, data_m,
                                                         cat_index, num_index,
