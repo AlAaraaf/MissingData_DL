@@ -67,11 +67,8 @@ if __name__ == '__main__':
 
     # Load data
     dataset = args.dataset
-    file_name = '../training_data/' + dataset + '.csv'
     model_name = args.model
     miss_mechanism = "MCAR"
-    data_df = pd.read_csv(file_name)
-    data_x = data_df.values.astype(np.float32)
 
     save_path = "../training_data/results/{}/{}_{}_{}/{}".format(dataset, miss_mechanism,args.mr, args.size,model_name)
     pathlib.Path(save_path).mkdir(parents=True, exist_ok=True)
@@ -100,5 +97,5 @@ if __name__ == '__main__':
 
     for l in range(num_imputations):
         print(rmse_loss(data_x_i, imputed_list[l], data_m))
-        np.savetxt(os.path.join(save_path, "imputed_{}_{}.csv".format(i, l)), imputed_list[l], delimiter=",")
+        np.savetxt(os.path.join(save_path, "imputed_{}_{}.csv".format(args.id, l)), imputed_list[l], delimiter=",")
     print("{} done!".format(args.id))

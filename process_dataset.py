@@ -5,13 +5,13 @@ def load_dataset(dataset: str,
                  missing_rate: str, 
                  sample_size: str, 
                  sample_id: str):
-    
+
+    datalevel = np.load('datalevel.npy', allow_pickle='TRUE').item()
     # check whether the dataset file exist or not
     if dataset not in datalevel.keys():
         print("Wrong dataset: {}".format(dataset))
         exit
-
-    datalevel = np.load('datalevel.npy', allow_pickle='TRUE').item()
+        
     all_levels_dict = datalevel[dataset]
     file_name = '../training_data/samples/{}/{}_{}_{}/sample_{}.csv'.format(dataset, miss_mechanism, missing_rate, sample_size, sample_id)  
     data_x_i = np.loadtxt('../training_data/samples/{}/complete_{}_{}/sample_{}.csv'.format(dataset, missing_rate, sample_size,sample_id), delimiter=",").astype(np.float32)
