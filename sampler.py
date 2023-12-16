@@ -18,19 +18,19 @@ def parse_args():
     parser.add_argument("-mr", type = float, required=True) # missing rate
     parser.add_argument("-size", type = int, required=True) # sample size
     parser.add_argument("-seed", type = int, required=False, default = 42) # set seed
-    parser.add_argument("-missc", type = int, required=False, default=-1) # specify whether only impute on one variable (for simulation)
+    parser.add_argument("-missc", type = str, required=False, default=-1) # specify whether only impute on one variable (for simulation)
     return parser.parse_args()
 
 ## For missc parameter, if missc == -1, all columns will have missing lines.
 ## Otherwise, missc will specify a 0-based column index for generating missing lines.
 
 sys.argv = [sys.argv[0],
-            '-data', 'sim1',
+            '-data', 'house',
             '-num_samp', '1',
             '-mr', '0.3',
             '-size', '10000',
             '-seed', '1234',
-            '-missc', '5']
+            '-missc', '13,14']
 
 if __name__ == '__main__':
     # Load data
@@ -45,6 +45,7 @@ if __name__ == '__main__':
     num_samples = int(args.num_samp)
     miss_rate = float(args.mr)
     sample_size = int(args.size)
+    missc = list(set(map(int, args.missc.split(","))))
 
     save_path_complete = "../training_data/samples/{}/complete_{}_{}".format(dataset,miss_rate, sample_size)
     if not os.path.exists(save_path_complete):
@@ -63,17 +64,16 @@ if __name__ == '__main__':
         np.savetxt(save_path, data_x_i, delimiter=",")
 
         # Introduce missing data
-        if args.missc == -1:
-            # missing value across all variables
-            data_m = binary_sampler(1 - miss_rate, no_i, dim_i, args.seed + i)
+        if missc == [-1]:
+            missc = list(range(dim_i))
+        k = len(missc)
+        if k <= dim_i:
+            data_m = binary_sampler(p=1 - miss_rate, rows=no_i, cols=k, seed=args.seed + i)
             miss_data_x = data_x_i.copy()
-            miss_data_x[data_m == 0] = np.nan
-        else:
-            # missing value at single variable
-            data_m = response_sampler(1 - miss_rate, no_i, dim_i, args.missc, args.seed + i)
-            miss_data_x = data_x_i.copy()
-            miss_data_x[data_m == 0] = np.nan
-        
+            idx_m = np.ones((no_i, dim_i))
+            idx_m[:, missc] = data_m
+            miss_data_x[idx_m == 0] = np.nan
+
         # Save files
         save_path = "../training_data/samples/{}/MCAR_{}_{}/sample_{}.csv".format(dataset,miss_rate, sample_size, i)
         np.savetxt(save_path, miss_data_x, delimiter=",")
