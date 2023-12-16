@@ -20,13 +20,13 @@ model_name="gain"
 dataset="boston"
 mr=0.3
 sample_size=500
-sample_id=1
-dlr_list=(0.0007)
-glr_list=(0.0005)
+sample_id=0
+dlr_list=(0.0007 0.0005)
+glr_list=(0.0005 0.0003)
 d_step=(2)
 g_step=(1)
 
-for lr_i in `seq 0 0`
+for lr_i in `seq 0 1`
 do
     for ds_i in `seq 0 0`
     do
@@ -35,13 +35,22 @@ do
             python ./main.py -id $sample_id -dataset $dataset -model $model_name -mr $mr -size $sample_size \
             -batch_size 128 \
             -alpha 20 \
-            -iterations 50 \
+            -iterations 1 \
             -dlr ${dlr_list[$lr_i]} \
             -glr ${glr_list[$lr_i]} \
             -d_gradstep ${d_step[$ds_i]} \
             -g_gradstep ${g_step[$gs_i]} \
             -log_name ${model_name}_$dataset/tuning/
 
+            python ./eval_main.py -id $sample_id -dataset $dataset -model $model_name -mr $mr -size $sample_size \
+            -batch_size 128 \
+            -alpha 20 \
+            -iterations 1 \
+            -dlr ${dlr_list[$lr_i]} \
+            -glr ${glr_list[$lr_i]} \
+            -d_gradstep ${d_step[$ds_i]} \
+            -g_gradstep ${g_step[$gs_i]} \
+            -log_name ${model_name}_$dataset/tuning/
         done 
     done
 done
