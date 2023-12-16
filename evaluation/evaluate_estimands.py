@@ -1,23 +1,45 @@
 import os
+import sys
 import numpy as np
 import pandas as pd
 import pathlib
+import argparse
 from evaluation.performance_metric import complete_CI, imputed_CI, coverage_rate, rel_mse_bias_var, interval_length_ratio, variance_ratio, rel_mse
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-dataset", type = str, required=True)
+    parser.add_argument("-model", type = str, required=True)
+    return parser.parse_args()
+
+args = parse_args()
+
 # Load data
-model_names = ["cart", "rf", "gain", "mida"]
+model_names = [args.model]
 miss_mechanism = "MCAR"
 
-save_name = "house"
-file_name = '../data/house_recoded.csv'
+save_name = args.dataset
+file_name = './data/' + save_name + '.csv'
 data_df = pd.read_csv(file_name)
 data_x = data_df.values.astype(np.float32)
 # Parameters
 no, dim = data_x.shape
 n = 10000
 
-num_index = list(range(-8, 0))
-cat_index = list(range(-data_df.shape[1], -8))
+# Variable type
+numeric_variable_nums = dict([('boston', 12), ('house',8),
+                              ('sim_1', 0),('sim_2',0), 
+                              ('sim_1_tiny',0), ('sim_2_tiny',0),
+                              ('nhanes',11)])
+if args.dataset not in numeric_variable_nums.keys() and args.dataset != 'income':
+    sys.exit("Wrong Dataset!")
+
+if args.dataset == 'income':
+    num_index = list([9, 16, 18, 19])
+    cat_index = list(set(range(data_df.shape[1])).difference(set(num_index)))
+else:
+    num_index = list(range(-numeric_variable_nums[args.dataset], 0))
+    cat_index = list(range(-data_df.shape[1], -numeric_variable_nums[args.dataset]))
 
 save_path = "../metrics/{}/{}".format(save_name, miss_mechanism)
 pathlib.Path(save_path).mkdir(parents=True, exist_ok=True)

@@ -3,27 +3,59 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import sys
 import numpy as np
 import pandas as pd
 import pathlib
+import argparse
 
 from utils.utils import rmse_loss, get_bins_from_numerical
-from evaluation.performance_metric import marginal_estimands, bivariate_estimands, house_bins
+from evaluation.performance_metric import marginal_estimands, bivariate_estimands, house_bins, income_bins
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-dataset", type = str, required=True)
+    parser.add_argument("-model", type = str, required=True)
+    parser.add_argument("-num", type = int, required=True) #number of samples
+    parser.add_argument("-mr", type = float, required=True) # missing rate
+    parser.add_argument("-size", type = int, required=True) # sample size
+    parser.add_argument("-completedir", type = str, required=True)
+    parser.add_argument("-missingdir", type = str, required = True)
+    parser.add_argument("-imputedir", type = str, required=True)
+    return parser.parse_args()
+
+# read pre_directions
+args = parse_args()
+dataset = args.dataset
+complete_data_folder = "../training_data/samples/{}/complete_{}_{}/".format(dataset, args.mr, args.size)
+missing_data_folder = "../training_data/samples/{}/MCAR_{}_{}/".format(dataset, args.mr, args.size)
+imputed_data_folder = "../training_data/results/{}/MCAR_{}_{}/{}/".format(dataset, args.mr, args.size, args.model)
+
+numeric_variable_nums = dict([('boston', 12), ('house',8),
+                              ('sim_1', 0),('sim_2',0), 
+                              ('sim_1_tiny',0), ('sim_2_tiny',0),
+                              ('sim_m1',1), ('sim_m2',1), ('sim_m3',1), ('sim_m4',1),
+                              ('nhanes',11)])
+if dataset not in numeric_variable_nums.keys() and dataset != 'income':
+    sys.exit("Wrong Dataset!")
 
 # Load data
-model_names = ["cart", "rf", "gain", "mida"]
-model_names = ["gain"]
-num_samples = 10
+model_names = [args.model]
+num_samples = int(args.num)
 num_imputations = 10
 
-save_name = "house"
+save_name = dataset
 miss_mechanism = "MCAR"
-file_name = './data/house_recoded.csv'
+file_name = './data/' + save_name + '.csv'
 data_df = pd.read_csv(file_name)
 data_x = data_df.values.astype(np.float32)
 
-num_index = list(range(-8, 0))
-cat_index = list(range(-data_df.shape[1], -8))
+if dataset == 'income':
+    num_index = list([9, 16, 18, 19])
+    cat_index = list(set(range(data_df.shape[1])).difference(set(num_index)))
+else:
+    num_index = list(range(-numeric_variable_nums[dataset], 0))
+    cat_index = list(range(-data_df.shape[1], -numeric_variable_nums[dataset]))
 
 # Parameters
 no, dim = data_x.shape
@@ -54,12 +86,12 @@ if cat_index:
 
 if num_index:
     data_num_pop_df = data_df.iloc[:, num_index]
-    if save_name != "house2":
+    if save_name == "house2":
         data_bin_pop_ls, bins = zip(*data_num_pop_df.apply(pd.qcut, 0, q=8, labels = False, retbins=True, duplicates="drop"))
         data_bin_pop_df = pd.concat(data_bin_pop_ls, axis=1)
     else:
-        bins = house_bins
-        data_bin_pop_df = get_bins_from_numerical(data_num_pop_df, house_bins)
+        bins = house_bins if save_name == 'house' else income_bins if save_name == 'income' else None
+        data_bin_pop_df = get_bins_from_numerical(data_num_pop_df, bins)
     # get all possible levels
     bin_all_levels = [np.unique(x) for x in data_bin_pop_df.values.T]
     bin_all_levels_dict = dict(zip(data_df.columns[num_index], bin_all_levels))
@@ -99,9 +131,9 @@ for model_name in model_names:
 
 for i in range(num_samples):
     # load samples
-    data_i = np.loadtxt('../samples/complete/sample_{}.csv'.format(i),
+    data_i = np.loadtxt(complete_data_folder + '/sample_{}.csv'.format(i),
                         delimiter=",").astype(np.float32)
-    data_miss_i = np.loadtxt('../samples/{}/sample_{}.csv'.format( miss_mechanism, i),
+    data_miss_i = np.loadtxt(missing_data_folder + '/sample_{}.csv'.format(i),
                              delimiter=",").astype(np.float32)
     data_m = 1 - np.isnan(data_miss_i).astype(np.float32)
     # seperate categorical variables and numerical variables
@@ -129,15 +161,14 @@ for i in range(num_samples):
         print("{}th sample, model: {}".format(i, model_name))
         for l in range(num_imputations):
             # loading imputations
-            if model_name == "gain" or model_name == "mida":
-                data_imputed = np.loadtxt('../results/{}/{}/{}/imputed_{}_{}.csv'.format(save_name, miss_mechanism, model_name, i, l),delimiter=",").astype (np.float32)
-            if model_name == "cart" or model_name =="rf":
-                data_imputed = pd.read_csv('../results/{}/{}/{}/imputed_{}_{}.csv'.format(save_name, miss_mechanism, model_name, i, l)).values.astype(np.float32)
+            data_imputed = np.loadtxt(imputed_data_folder + '/imputed_{}_{}.csv'.format(i, l),delimiter=",").astype (np.float32)
             # report accuracy
             mse[model_name].append(rmse_loss(data_i, data_imputed, data_m))
             # seperate categorical variables an d numerical variables
             if cat_index:
                 imputed_cat = data_imputed[:, cat_index]
+                if model_name == 'cart':
+                    imputed_cat = imputed_cat - 1.0
                 imputed_cat_df = pd.DataFrame(data=imputed_cat,
                                               index=list(range(imputed_cat.shape[0])),
                                               columns=data_df.columns[cat_index])
