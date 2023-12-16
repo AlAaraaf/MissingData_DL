@@ -1,4 +1,5 @@
 import os
+import shutil
 import argparse
 import numpy as np
 import pathlib
@@ -20,7 +21,8 @@ def parse_args():
     parser.add_argument("-d_gradstep", type=int, required=True) # discriminator steps
     parser.add_argument("-g_gradstep", type=int, required=True) # generator steps
     parser.add_argument("-onlylog", type=int, default=0) # generate file prefix only by prefix
-    parser.add_argument("-prefix", type=str, required=True) # the prefix name to differ from other experiments
+    parser.add_argument("-prefix", type=str, required=False) # the prefix name to differ from other experiments
+    parser.add_argument("-delete_impute",type=int, default=0) # whether delete the imputed data after analysis
 
     return parser.parse_args()
 
@@ -66,4 +68,8 @@ if __name__ == '__main__':
     np.save(os.path.join(save_path, maefile), quantile_mse)
 
     print("finish")
+
     # delete imputed data
+    if args.delete_impute == 1:
+        imputed_data_folder = '../training_data/results/' + dataset + '/MCAR_' + str(mr) + '_' + str(size) + '/' + args.model + '/'
+        shutil.rmtree(imputed_data_folder)
