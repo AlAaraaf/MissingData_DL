@@ -49,8 +49,7 @@ do
             -dlr ${dlr_list[$lr_i]} \
             -glr ${glr_list[$lr_i]} \
             -d_gradstep ${d_step[$ds_i]} \
-            -g_gradstep ${g_step[$gs_i]} \
-            -log_name ${model_name}_$dataset/tuning/
+            -g_gradstep ${g_step[$gs_i]}
         done 
     done
 done

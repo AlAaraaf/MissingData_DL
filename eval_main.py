@@ -3,7 +3,7 @@ import shutil
 import argparse
 import numpy as np
 import pathlib
-from eval.calculate_metrics import generate_cond_cont, metric_comparison
+from eval.calculate_metrics import generate_cond_cont, metric_comparison, js_comparison
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -46,6 +46,8 @@ if __name__ == '__main__':
     quantile_mae = dict.fromkeys(method_list, None)
     comparison_dict = dict.fromkeys(method_list, None)
     cond_dist_imputed = dict.fromkeys(method_list, None)
+    cond_dist_imputed_js = dict.fromkeys(method_list, None)
+    js_val =dict.fromkeys(method_list, None)
     quant_list = [0.1,0.3,0.5,0.7,0.9,1]
 
     for method in method_list:
@@ -54,6 +56,11 @@ if __name__ == '__main__':
                             all_levels, all_levels_comb, cond_dist_complete, attn_var, condtag,
                             sample_id, impute_num)
         cond_dist_imputed[method], quantile_mse[method], quantile_mae[method] = result
+
+        result = js_comparison(imputed_data_folder, dataset,
+                         all_levels_comb, cond_dist_complete, condtag,
+                         sample_id, impute_num, y_loc)
+        cond_dist_imputed_js[method], js_val[method] = result
     
     save_path = '../metrics/' + dataset + '_MCAR_' + str(mr) + '_' + str(size) + '/' + method + '/'
     pathlib.Path(save_path).mkdir(parents=True, exist_ok=True)
@@ -64,8 +71,10 @@ if __name__ == '__main__':
         hyperparam = args.prefix
     maefile = hyperparam + 'quantile_mae.npy'
     msefile = hyperparam + 'quantile_mse.npy'
+    jsdivfile = hyperparam + 'jsdiv.npy'
     np.save(os.path.join(save_path, maefile), quantile_mae)
-    np.save(os.path.join(save_path, maefile), quantile_mse)
+    np.save(os.path.join(save_path, msefile), quantile_mse)
+    np.save(os.path.join(save_path, jsdivfile), js_val)
 
     print("finish")
 

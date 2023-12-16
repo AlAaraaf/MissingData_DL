@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from itertools import product
 from sklearn.metrics import mean_absolute_error, mean_squared_error
-from scipy.special import rel_entr
+from scipy.spatial.distance import jensenshannon
 
 def strint(x):
     return str(int(x))
@@ -71,14 +71,16 @@ def metric_comparison(method, imputed_data_folder, quant_list,
     return cond_dist_imputed, mse_quantile, mae_quantile
 
 
-# output estimated KL for each pair of specified conditional distribution in one sample
+# output estimated JS divergence for each pair of specified conditional distribution in one sample
 # extract conditional dataset from imputed datasets
-def kl_comparison(imputed_data_folder, bin_list,
+def js_comparison(imputed_data_folder,dataset,
                       all_levels_comb, cond_dist_complete, condtag,
                       sample_id, impute_num, y_loc):
-
+    
+    all_levels_dict = np.load('datalevel.npy', allow_pickle='TRUE').item()[dataset]
+    y_levels = list(all_levels_dict['levels'].values())[y_loc] 
     cond_dist_imputed = {key:[] for key in all_levels_comb}
-    kl_val = {key:[] for key in all_levels_comb}
+    js_val = {key:[] for key in all_levels_comb}
 
     for i in range(impute_num):
         current_imputed_dir = imputed_data_folder + 'imputed_' + str(sample_id) + '_' + str(i) + '.csv'
@@ -92,17 +94,18 @@ def kl_comparison(imputed_data_folder, bin_list,
             # add data to imputed conditional distribution
             cond_dist_imputed[key] = cond_dist_imputed[key] + cond_imputed_data
 
-    def bin_continuous(x):
-        neg_x = [item * (-1) for item in x]
-        bin_counts = [len([item for item in neg_x if item == -1])]
-        bin_counts.extend(pd.cut(neg_x, bins = bin_list).value_counts().tolist())
-        bin_counts = [item / len(x) for item in bin_counts]
-        return bin_counts
+    def get_prob(labels):
+        test = pd.Series([i for i in labels])
+        counts = []
+        for i in range(len(y_levels)):
+            counts.append(sum(x == y_levels[i] for x in labels))
+        counts = [x / len(test) for x in counts]
+        return counts
     
     for key in all_levels_comb:
+        y_true = get_prob(cond_dist_complete[key])
+        y_pred = get_prob(cond_dist_imputed[key])
         # calculate metrics
-        y_true_bin = bin_continuous(cond_dist_complete[key])
-        y_pred_bin = bin_continuous(cond_dist_imputed[key])
-        kl_val[key].append(round(sum(rel_entr(y_true_bin, y_pred_bin)),6))
+        js_val[key].append(round(jensenshannon(p = y_pred,q = y_true),6))
         
-    return cond_dist_imputed, kl_val
+    return cond_dist_imputed, js_val
