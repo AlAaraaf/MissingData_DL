@@ -5,9 +5,9 @@ from scipy.spatial.distance import jensenshannon
 
 def categorical_metrics(pred, target):
     norm_pred = pred / sum(pred)
-    norm_pred = norm_pred.astype(np.longdouble)
+    norm_pred = norm_pred.astype(np.float64)
     norm_target = target / sum(target)
-    norm_target = norm_target.astype(np.longdouble)
+    norm_target = norm_target.astype(np.float64)
     
     acc = mtr.accuracy_score(target, pred)
     precision, recall, fscore, _ = mtr.precision_recall_fscore_support(target, pred, average='weighted')
@@ -16,9 +16,9 @@ def categorical_metrics(pred, target):
 
 def numeric_metrics(pred, target):
     norm_pred = pred / sum(pred)
-    norm_pred = norm_pred.astype(np.longdouble)
+    norm_pred = norm_pred.astype(np.float64)
     norm_target = target / sum(target)
-    norm_target = norm_target.astype(np.longdouble)
+    norm_target = norm_target.astype(np.float64)
 
     mse = mtr.mean_squared_error(target, pred)
     mae = mtr.mean_absolute_error(target, pred)
