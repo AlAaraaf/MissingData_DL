@@ -1,15 +1,15 @@
+import os
 import numpy as np
 import pandas as pd
 from itertools import product
+import pathlib
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 from scipy.spatial.distance import jensenshannon
 
 def strint(x):
     return str(int(x))
 
-def generate_cond_cont(dataset, mr, size, sample_id, attn_var, y_loc):
-    complete_data_path = '../training_data/samples/' + dataset + '/complete_' + str(mr) + '_' + str(size) + '/sample_' + str(sample_id) + '.csv'
-    data = pd.read_csv(complete_data_path, header=None)
+def generate_cond_cont(data, attn_var, y_loc):
 
     # get all possible levels' combination for categorical variable that we specified
     all_levels = [np.unique(data.iloc[:,i]).tolist() for i in attn_var]
@@ -109,3 +109,56 @@ def js_comparison(imputed_data_folder,dataset,
         js_val[key].append(round(jensenshannon(p = y_pred,q = y_true),6))
         
     return cond_dist_imputed, js_val
+
+
+def conditional_metrics(args):
+    dataset = args.dataset
+    mr = args.mr
+    size = args.size
+    sample_id = args.id
+    impute_num = 10
+    attn_var = range(1)
+    y_loc = 1
+
+    
+    complete_data_path = '../training_data/samples/{}/complete_{}_{}/sample_{}.csv'.format(dataset, mr, size, sample_id)
+    complete_data = pd.read_csv(complete_data_path, header=None)
+    all_levels, all_levels_comb, cond_dist_complete, perm_data, condtag = generate_cond_cont(complete_data, attn_var, y_loc)
+
+    # calculate metrics
+    method_list = [args.model]
+    quantile_mse = dict.fromkeys(method_list, None)
+    quantile_mae = dict.fromkeys(method_list, None)
+    comparison_dict = dict.fromkeys(method_list, None)
+    cond_dist_imputed = dict.fromkeys(method_list, None)
+    cond_dist_imputed_js = dict.fromkeys(method_list, None)
+    js_val =dict.fromkeys(method_list, None)
+    quant_list = [0.1,0.3,0.5,0.7,0.9,1]
+
+    for method in method_list:
+        imputed_data_folder = '../training_data/results/' + dataset + '/MCAR_' + str(mr) + '_' + str(size) + '/' + method + '/'
+        result = metric_comparison(method,imputed_data_folder, quant_list,
+                            all_levels, all_levels_comb, cond_dist_complete, attn_var, condtag,
+                            sample_id, impute_num)
+        cond_dist_imputed[method], quantile_mse[method], quantile_mae[method] = result
+
+        result = js_comparison(imputed_data_folder, dataset,
+                         all_levels_comb, cond_dist_complete, condtag,
+                         sample_id, impute_num, y_loc)
+        cond_dist_imputed_js[method], js_val[method] = result
+    
+    save_path = '../metrics/' + dataset + '_MCAR_' + str(mr) + '_' + str(size) + '/' + method + '/'
+    pathlib.Path(save_path).mkdir(parents=True, exist_ok=True)
+    
+    if args.onlylog == 0:
+        hyperparam = str(args.batch_size) + '_' + str(args.alpha) + '_' + str(args.dlr) + '_' + str(args.glr) + '_' + str(args.d_gradstep) + '_' + str(args.g_gradstep) + '_'
+    else:
+        hyperparam = args.prefix
+    maefile = hyperparam + 'quantile_mae.npy'
+    msefile = hyperparam + 'quantile_mse.npy'
+    jsdivfile = hyperparam + 'jsdiv.npy'
+    np.save(os.path.join(save_path, maefile), quantile_mae)
+    np.save(os.path.join(save_path, msefile), quantile_mse)
+    np.save(os.path.join(save_path, jsdivfile), js_val)
+
+    print("finish")
