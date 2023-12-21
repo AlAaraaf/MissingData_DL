@@ -28,5 +28,6 @@ do
     -mr $mr \
     -size ${sample_size[$i]} \
     -missc ${missing_column[$i]}
+done
 
 echo 'finish'
