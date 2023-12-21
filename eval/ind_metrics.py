@@ -3,15 +3,21 @@ import pandas as pd
 from sklearn import metrics as mtr
 from scipy.spatial.distance import jensenshannon
 
-def categorical_metrics(pred, target):
-    norm_pred = pred / sum(pred)
-    norm_pred = norm_pred.astype(np.float64)
-    norm_target = target / sum(target)
-    norm_target = norm_target.astype(np.float64)
-    
+def get_prob(labels):
+    test = pd.Series([i for i in labels])
+    counts = []
+    for i in range(max(labels)):
+        counts.append(sum(x == i for x in labels))
+    counts = [x / len(test) for x in counts]
+    return counts
+
+def categorical_metrics(pred, target):    
     acc = mtr.accuracy_score(target, pred)
     precision, recall, fscore, _ = mtr.precision_recall_fscore_support(target, pred, average='weighted')
-    js_div = jensenshannon(norm_pred, norm_target)
+
+    p_pred = get_prob(pred)
+    p_target = get_prob(target)
+    js_div = jensenshannon(p_pred, p_target)
     return acc, precision, recall, fscore, js_div
 
 def numeric_metrics(pred, target):
