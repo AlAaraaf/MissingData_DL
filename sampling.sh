@@ -15,10 +15,18 @@
 #module load python/3.10.8-5qsesua
 #source /work/LAS/zhanruic-lab/jiaxin/vaeac/jiaxin/bin/activate
 
-dataset='income'
+dataset_list=('sim1' 'sim2' 'sim3' 'sim4' 'boston' 'credit' 'nhanes' 'house')
 sample_number=1
 mr=0.3
-sample_size=10000
-missing_column=-1
-python ./sampler.py -data $dataset -num_samp ${sample_number} -mr $mr -size ${sample_size} -missc ${missing_column}
+sample_size=(10000 10000 10000 10000 500 10000 10000 10000)
+missing_column=(5 5 5 5 1 3 4 14)
+
+for i in `seq 0 7`
+do
+    python ./sampler.py -data ${dataset_list[$i]} \
+    -num_samp ${sample_number} \
+    -mr $mr \
+    -size ${sample_size[$i]} \
+    -missc ${missing_column[$i]}
+
 echo 'finish'
