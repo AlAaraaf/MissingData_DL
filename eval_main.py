@@ -2,8 +2,9 @@ import os
 import shutil
 import argparse
 import numpy as np
+import pandas as pd
 import pathlib
-from eval.calculate_metrics import generate_cond_cont, metric_comparison, js_comparison
+from eval.ind_metrics import get_metrics
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -12,6 +13,7 @@ def parse_args():
     parser.add_argument("-model", type = str, required = True) # the model used in training
     parser.add_argument("-mr", type = float, required=True) # missing rate
     parser.add_argument("-size", type = int, required=True) # sample size
+    parser.add_argument("-type", type=str, default='ind') # type of evaluation
 
     parser.add_argument("-batch_size", type = int, required = True)
     parser.add_argument("-alpha", type = int, required = True) # hyperparam for GAN optim
@@ -21,7 +23,7 @@ def parse_args():
     parser.add_argument("-d_gradstep", type=int, required=True) # discriminator steps
     parser.add_argument("-g_gradstep", type=int, required=True) # generator steps
     parser.add_argument("-onlylog", type=int, default=0) # generate file prefix only by prefix
-    parser.add_argument("-prefix", type=str, required=False) # the prefix name to differ from other experiments
+    parser.add_argument("-prefix", type=str) # the prefix name to differ from other experiments
     parser.add_argument("-delete_impute",type=int, default=0) # whether delete the imputed data after analysis
 
     return parser.parse_args()
@@ -34,51 +36,28 @@ if __name__ == '__main__':
     size = args.size
     sample_id = args.id
     impute_num = 10
-    attn_var = range(1)
-    y_loc = 1
+    model = args.model
 
     print('Calculating metrics......')
-    all_levels, all_levels_comb, cond_dist_complete, perm_data, condtag = generate_cond_cont(dataset, mr, size, sample_id, attn_var, y_loc)
 
-    # calculate metrics
-    method_list = [args.model]
-    quantile_mse = dict.fromkeys(method_list, None)
-    quantile_mae = dict.fromkeys(method_list, None)
-    comparison_dict = dict.fromkeys(method_list, None)
-    cond_dist_imputed = dict.fromkeys(method_list, None)
-    cond_dist_imputed_js = dict.fromkeys(method_list, None)
-    js_val =dict.fromkeys(method_list, None)
-    quant_list = [0.1,0.3,0.5,0.7,0.9,1]
+    complete_data_path = '../training_data/samples/{}/complete_{}_{}/sample_{}.csv'.format(dataset, mr, size, sample_id)
+    complete_data = np.loadtxt(complete_data_path, delimiter=",").astype(np.float32)
+    imputed_data_folder = '../training_data/results/{}/MCAR_{}_{}/{}/'.format(dataset, mr, size, model)
+    data_level = np.load('./datalevel.npy', allow_pickle=True).item()[dataset]
 
-    for method in method_list:
-        imputed_data_folder = '../training_data/results/' + dataset + '/MCAR_' + str(mr) + '_' + str(size) + '/' + method + '/'
-        result = metric_comparison(method,imputed_data_folder, quant_list,
-                            all_levels, all_levels_comb, cond_dist_complete, attn_var, condtag,
-                            sample_id, impute_num)
-        cond_dist_imputed[method], quantile_mse[method], quantile_mae[method] = result
-
-        result = js_comparison(imputed_data_folder, dataset,
-                         all_levels_comb, cond_dist_complete, condtag,
-                         sample_id, impute_num, y_loc)
-        cond_dist_imputed_js[method], js_val[method] = result
-    
-    save_path = '../metrics/' + dataset + '_MCAR_' + str(mr) + '_' + str(size) + '/' + method + '/'
+    metrics = get_metrics(complete_data, imputed_data_folder, data_level, impute_num, sample_id)
+    save_path = '../metrics/{}/{}/MCAR_{}_{}/{}/'.format(args.type, dataset, mr, size, model)
     pathlib.Path(save_path).mkdir(parents=True, exist_ok=True)
     
     if args.onlylog == 0:
-        hyperparam = str(args.batch_size) + '_' + str(args.alpha) + '_' + str(args.dlr) + '_' + str(args.glr) + '_' + str(args.d_gradstep) + '_' + str(args.g_gradstep) + '_'
+        hyperparam = '{}_{}_{}_{}_{}_{}.npy'.format(str(args.batch_size), str(args.alpha), str(args.dlr), str(args.glr), str(args.d_gradstep), str(args.g_gradstep))
     else:
         hyperparam = args.prefix
-    maefile = hyperparam + 'quantile_mae.npy'
-    msefile = hyperparam + 'quantile_mse.npy'
-    jsdivfile = hyperparam + 'jsdiv.npy'
-    np.save(os.path.join(save_path, maefile), quantile_mae)
-    np.save(os.path.join(save_path, msefile), quantile_mse)
-    np.save(os.path.join(save_path, jsdivfile), js_val)
-
-    print("finish")
+    save_name = os.path.join(save_path, hyperparam)
+    np.save(save_name, metrics, allow_pickle=True)
+    print("Finish.")
 
     # delete imputed data
     if args.delete_impute == 1:
-        imputed_data_folder = '../training_data/results/' + dataset + '/MCAR_' + str(mr) + '_' + str(size) + '/' + args.model + '/'
         shutil.rmtree(imputed_data_folder)
+        print("Imputed data deleted.")

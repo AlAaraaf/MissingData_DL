@@ -15,42 +15,52 @@
 #module load python/3.10.8-5qsesua
 #source /work/LAS/zhanruic-lab/jiaxin/vaeac/jiaxin/bin/activate
 
-degree=1
 model_name="gain"
-dataset="boston"
+dataset_list=("sim1" "sim2" "sim3" "sim4" "boston" "credit" "nhanes" "house")
 mr=0.3
-sample_size=500
+sample_size=(10000 10000 10000 10000 500 10000 10000 10000)
 sample_id=0
-dlr_list=(0.0007 0.0005)
-glr_list=(0.0005 0.0003)
-d_step=(2)
-g_step=(1)
+dlr_list=(0.0005 0.0007 0.001 0.005 0.01 0.02)
+glr_list=(0.0003 0.0005 0.0007 0.003 0.007 0.01)
+d_step=(4 4 4 3 2 2)
+g_step=(3 3 2 2 1 1)
+alpha=(20 15 10)
+batch_size=512
+iteration=50
 
-for lr_i in `seq 0 1`
+for dataset_i in `seq 0 7`
 do
-    for ds_i in `seq 0 0`
+    for alpha_i in `seq 0 2`
     do
-        for gs_i in `seq 0 0`
+        for lr_i in `seq 0 5`
         do
-            python ./main.py -id $sample_id -dataset $dataset -model $model_name -mr $mr -size $sample_size \
-            -batch_size 128 \
-            -alpha 20 \
-            -iterations 1 \
+            python ./main.py -id $sample_id \
+            -dataset ${dataset_list[$dataset_i]} \
+            -model $model_name \
+            -mr $mr \
+            -size ${sample_size[dataset_i]} \
+            -batch_size $batch_size \
+            -alpha ${alpha[$alpha_i]} \
+            -iterations $iteration \
             -dlr ${dlr_list[$lr_i]} \
             -glr ${glr_list[$lr_i]} \
-            -d_gradstep ${d_step[$ds_i]} \
-            -g_gradstep ${g_step[$gs_i]} \
+            -d_gradstep ${d_step[$lr_i]} \
+            -g_gradstep ${g_step[$lr_i]} \
             -log_name ${model_name}_$dataset/tuning/
 
-            python ./eval_main.py -id $sample_id -dataset $dataset -model $model_name -mr $mr -size $sample_size \
-            -batch_size 128 \
-            -alpha 20 \
-            -iterations 1 \
+            python ./eval_main.py -id $sample_id \
+            -dataset ${dataset_list[$dataset_i]} \
+            -model $model_name \
+            -mr $mr \
+            -size ${sample_size[dataset_i]} \
+            -batch_size $batch_size \
+            -alpha ${alpha[$alpha_i]} \
+            -iterations $iteration \
             -dlr ${dlr_list[$lr_i]} \
             -glr ${glr_list[$lr_i]} \
-            -d_gradstep ${d_step[$ds_i]} \
-            -g_gradstep ${g_step[$gs_i]}
-        done 
+            -d_gradstep ${d_step[$lr_i]} \
+            -g_gradstep ${g_step[$lr_i]}
+        done
     done
 done
 echo 'finish'
