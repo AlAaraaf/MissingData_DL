@@ -11,7 +11,7 @@ def categorical_metrics(pred, target):
     
     acc = mtr.accuracy_score(target, pred)
     precision, recall, fscore, _ = mtr.precision_recall_fscore_support(target, pred, average='weighted')
-    js_div = jensenshannon(norm_pred.astype(np.longdouble), norm_target.astype(np.longdouble))
+    js_div = jensenshannon(norm_pred, norm_target)
     return acc, precision, recall, fscore, js_div
 
 def numeric_metrics(pred, target):
