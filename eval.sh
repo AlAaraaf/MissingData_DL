@@ -20,14 +20,21 @@
 # for example, try mrun.sh for the GAN output result
 
 model_name="gain"
-dataset="boston"
+dataset="sim1"
 mr=0.3
-sample_size=500
+sample_size=10000
 sample_id=0
 prefix="prefix_for_model_metric"
 
 python ./eval_main.py -id $sample_id -dataset $dataset -model $model_name -mr $mr -size $sample_size \
+    -batch_size 1 \
+    -alpha 1 \
+    -iterations 1 \
+    -dlr 1 \
+    -glr 1 \
+    -d_gradstep 1 \
+    -g_gradstep 1 \
     -onlylog 1 \
-    -prefix ${prefix}
+    -prefix $prefix
 
 echo 'finish'

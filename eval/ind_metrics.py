@@ -6,7 +6,7 @@ from scipy.spatial.distance import jensenshannon
 def get_prob(labels):
     test = pd.Series([i for i in labels])
     counts = []
-    for i in range(max(labels)):
+    for i in range(int(max(labels))):
         counts.append(sum(x == i for x in labels))
     counts = [x / len(test) for x in counts]
     return counts

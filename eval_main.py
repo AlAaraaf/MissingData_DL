@@ -13,7 +13,7 @@ def parse_args():
     parser.add_argument("-model", type = str, required = True) # the model used in training
     parser.add_argument("-mr", type = float, required=True) # missing rate
     parser.add_argument("-size", type = int, required=True) # sample size
-    parser.add_argument("-type", type=str, default='ind') # type of evaluation
+    parser.add_argument("-type", type=str, default='ind') # type of evaluation (correlating to the type of missing, choose from ind and mcar)
 
     parser.add_argument("-batch_size", type = int, required = True)
     parser.add_argument("-alpha", type = int, required = True) # hyperparam for GAN optim
