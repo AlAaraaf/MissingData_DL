@@ -41,11 +41,17 @@ if __name__ == '__main__':
     print('Calculating metrics......')
 
     complete_data_path = '../training_data/samples/{}/complete_{}_{}/sample_{}.csv'.format(dataset, mr, size, sample_id)
+    sample_data_path = '../training_data/samples/{}/MCAR_{}_{}/sample_{}.csv'.format(dataset, mr, size, sample_id)
+    
     complete_data = np.loadtxt(complete_data_path, delimiter=",").astype(np.float32)
+    sample_data = np.loadtxt(sample_data_path, delimiter=",").astype(np.float32)
+
+    mask_data = np.isnan(sample_data).astype(np.float32)
+    
     imputed_data_folder = '../training_data/results/{}/MCAR_{}_{}/{}/'.format(dataset, mr, size, model)
     data_level = np.load('./datalevel.npy', allow_pickle=True).item()[dataset]
 
-    metrics = get_metrics(complete_data, imputed_data_folder, data_level, impute_num, sample_id)
+    metrics = get_metrics(complete_data, mask_data, imputed_data_folder, data_level, impute_num, sample_id)
     save_path = '../metrics/{}/{}/MCAR_{}_{}/{}/'.format(args.type, dataset, mr, size, model)
     pathlib.Path(save_path).mkdir(parents=True, exist_ok=True)
     
