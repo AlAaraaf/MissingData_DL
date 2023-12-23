@@ -18,7 +18,7 @@
 dataset_list=('sim1' 'sim2' 'sim3' 'sim4' 'boston' 'credit' 'nhanes' 'house')
 sample_number=1
 mr=0.3
-sample_size=(10000 10000 10000 10000 500 10000 10000 10000)
+sample_size=(10000 10000 10000 10000 500 10000 8443 10000)
 missing_column=(5 5 5 5 1 3 4 14)
 
 for i in `seq 0 7`

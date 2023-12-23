@@ -18,7 +18,7 @@
 model_name="gain"
 dataset_list=("sim1" "sim2" "sim3" "sim4" "boston" "credit" "nhanes" "house")
 mr=0.3
-sample_size=(10000 10000 10000 10000 500 10000 10000 10000)
+sample_size=(10000 10000 10000 10000 500 10000 8443 10000)
 sample_id=0
 dlr_list=(0.0005 0.0007 0.001 0.005 0.01 0.02)
 glr_list=(0.0003 0.0005 0.0007 0.003 0.007 0.01)
@@ -38,7 +38,7 @@ do
             -dataset ${dataset_list[$dataset_i]} \
             -model $model_name \
             -mr $mr \
-            -size ${sample_size[dataset_i]} \
+            -size ${sample_size[$dataset_i]} \
             -batch_size $batch_size \
             -alpha ${alpha[$alpha_i]} \
             -iterations $iteration \
@@ -52,7 +52,8 @@ do
             -dataset ${dataset_list[$dataset_i]} \
             -model $model_name \
             -mr $mr \
-            -size ${sample_size[dataset_i]} \
+            -size ${sample_size[$dataset_i]} \
+            -type ind \
             -batch_size $batch_size \
             -alpha ${alpha[$alpha_i]} \
             -iterations $iteration \

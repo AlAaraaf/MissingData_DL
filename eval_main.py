@@ -46,7 +46,7 @@ if __name__ == '__main__':
     complete_data = np.loadtxt(complete_data_path, delimiter=",").astype(np.float32)
     sample_data = np.loadtxt(sample_data_path, delimiter=",").astype(np.float32)
 
-    mask_data = np.isnan(sample_data).astype(np.float32)
+    mask_data = np.isnan(sample_data).astype(np.intc)
     
     imputed_data_folder = '../training_data/results/{}/MCAR_{}_{}/{}/'.format(dataset, mr, size, model)
     data_level = np.load('./datalevel.npy', allow_pickle=True).item()[dataset]
